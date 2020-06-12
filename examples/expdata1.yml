@@ -1,0 +1,11 @@
+#
+# Example showing data collected from an experiment
+#
+expdata:
+-   dir: "expdata"
+    expnum: 1
+    trial: 2
+    county: "24031"
+    days_before_first: 1
+    days_after_first: 5
+    output: collects/expdata1.csv

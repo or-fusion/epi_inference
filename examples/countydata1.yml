@@ -1,0 +1,14 @@
+collect:
+-   workflow: casedata
+    dir: "countydata"
+    files:
+        - "Alachua_FL_up_to_2020-03-30.csv"
+        - "Baker_FL_up_to_2020-03-30.csv"
+        - "Bay_FL_up_to_2020-03-30.csv"
+        - "Bradford_FL_up_to_2020-03-30.csv"
+        - "Brevard_FL_up_to_2020-03-30.csv"
+        - "Broward_FL_up_to_2020-03-25.csv"
+        - "Broward_FL_up_to_2020-03-30.csv"
+    days_before_first: 1
+    days_after_first: 5
+    output: collects/countydata1.csv

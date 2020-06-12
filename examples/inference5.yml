@@ -1,0 +1,90 @@
+collect:
+-   workflow: casedata
+    factors:
+        state: [ "FL" ]
+    dir: "countydata"
+    files:
+        - "FL_12001.csv"
+        - "FL_12003.csv"
+        - "FL_12005.csv"
+        - "FL_12007.csv"
+        - "FL_12009.csv"
+        - "FL_12011.csv"
+        - "FL_12013.csv"
+    days_before_first: 3
+    output: collects/countydata5_${state}.csv
+
+reconstruct:
+-   workflow: reconstruction_deterministic_delay
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata5_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: 'collects/recon_county_det_FL.json'
+
+inference:
+-   workflow: 'estimate_beta_windows_with_mobility'
+    reconstruction_json: "collects/recon_county_det_FL.json"
+    analysis_window:
+        days: 14
+    mobility_json: "countydata/mobility_modified.json"
+    output_json: 'collects/results_countydata5_FL_windows_mobility.json'
+    version: poek
+
+csv:
+-   workflow: 'recon_json2csv'
+    input_json: 'collects/recon_county_det_FL.json'
+-   workflow: 'recon_many_json2csv'
+    input_json:
+        - collects/recon_county_det_FL.json
+        - collects/recon_county_det_FL.json
+    output_csv: 'collects/recon_county_det_FL.csv'
+
+viz:
+-   workflow: 'viz_choropleth'
+    input_json: 'collects/results_countydata5_FL_windows_mobility.json'
+
+
+inference-old:
+-   workflow: 'multinode-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata5_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    bootstrap:
+        n: 11
+        percentile: 10
+        output_csv: 'collects/results_countydata5_FL_multinode_bootstrap.csv'
+    output_csv: 'collects/results_countydata5_FL_multinode.csv'
+-   workflow: 'multinode-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata5_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_csv: 'collects/results_countydata5_FL_multinode.csv'
+-   workflow: 'decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata5_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_csv: 'collects/results_countydata5_FL.csv'

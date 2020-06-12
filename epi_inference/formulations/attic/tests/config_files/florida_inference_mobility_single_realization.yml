@@ -1,0 +1,19 @@
+#
+# Execute mobility formulation on a single
+# instance of simulated data using the mobility
+# formulation
+#
+
+inference:
+-   workflow: 'multinode-mobility-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    population_csv:
+        file: 'data/florida/geodata.csv'
+        population: 'pop2010'
+        index: 'geoid'
+    mobility_json: 'data/florida/mobility.json'
+    reporting_factor: 1.0
+    output_json: "output/florida_inference_mobility_single_realizations.json"
+    input_csv: "data/florida/FL_R0_2.50_realization_2.csv"

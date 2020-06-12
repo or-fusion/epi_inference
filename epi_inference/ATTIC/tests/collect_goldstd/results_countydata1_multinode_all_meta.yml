@@ -1,0 +1,19 @@
+configuration:
+  bootstrap:
+    n: 10
+    seed: 1298798934
+  deltaP: 7
+  factors:
+    formulation:
+    - multinode-decay-lsq
+  formulation: ${formulation}
+  gamma: 0.25
+  input_csv: collect_goldstd/countydata1_FL.csv
+  output_csv: collect_output/results_countydata1_multinode_all.csv
+  population_csv:
+    file: ../../examples/countydata/FL_county_population.csv
+    index: FIPS
+    population: pop_2019
+  reporting_factor: 1.0
+  sigma: 0.1923076923
+timestamp: '2020-04-20 21:39:19.536512'

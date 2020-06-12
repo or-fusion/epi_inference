@@ -1,0 +1,12 @@
+This folder tests the stochastic reconstruction code using simulated data
+run:
+epiinf reconstruct-det config/FL.yml
+epiinf reconstruct config/FL.yml
+epiinf postprocess config/FL.yml
+python bin/reconstruction_figs.py
+
+This will generate a figure in figures that contains the reconstructions
+and the simulated data on the same plot for each of the counties.
+It also shows the lower (2.5%), simulated, and upper (97.5%) values
+for the reconstructions (with the simulated value) at the final time.
+

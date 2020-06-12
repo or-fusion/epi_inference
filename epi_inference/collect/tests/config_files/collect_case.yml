@@ -1,0 +1,27 @@
+collect:
+-   workflow: casedata
+    factors:
+        state: [ "FL" ]
+    dir: "../../../examples/countydata"
+    files:
+        - "FL_12001.csv"
+        - "FL_12003.csv"
+        - "FL_12005.csv"
+        - "FL_12007.csv"
+        - "FL_12009.csv"
+        - "FL_12011.csv"
+        - "FL_12013.csv"
+    days_before_first: 3
+    output: output/countydata1_${state}.csv
+-   workflow: casedata
+    dir: "../../../examples/countydata"
+    files:
+        - "FL_12001.csv"
+        - "FL_12003.csv"
+        - "FL_12005.csv"
+        - "FL_12007.csv"
+        - "FL_12009.csv"
+        - "FL_12011.csv"
+        - "FL_12013.csv"
+    days_before_first: 3
+    output: output/countydata1_FL.csv

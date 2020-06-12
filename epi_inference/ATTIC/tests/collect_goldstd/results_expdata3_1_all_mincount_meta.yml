@@ -1,0 +1,13 @@
+configuration:
+  county: '24031'
+  deltaP: 7
+  filter:
+    starting_min_count: 20
+  formulation: decay-lsq
+  gamma: 0.25
+  input_csv: collect_goldstd/expdata3_1_all.csv
+  ntrials: 10
+  output_csv: collect_output/results_expdata3_1_all_mincount.csv
+  reporting_factor: 1.0
+  sigma: 0.1923076923
+timestamp: '2020-04-12 15:50:13.738512'

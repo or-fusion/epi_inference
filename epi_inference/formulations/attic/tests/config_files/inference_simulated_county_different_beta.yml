@@ -1,0 +1,12 @@
+inference:
+-   workflow: 'decay-lsq'
+    sigma: 0.2 # 1/5
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "data/simulated_independent_county_different_beta.csv"
+    population_csv:
+        file: 'data/simulated_independent_county_different_beta_pop.csv'
+        population: 'pop'
+        index: 'FIPS'
+    output_csv: 'output/results_inference_simulated_county_different_beta.csv'

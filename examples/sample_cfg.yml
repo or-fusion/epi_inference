@@ -1,0 +1,150 @@
+expdata:
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 1
+      #days_before_first: 5
+      #days_after_first: 30
+      output: 'data/county_24031_exp1_all.csv'
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 2
+      output: 'data/county_24031_exp2_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 3
+      output: 'data/county_24031_exp3_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 4
+      output: 'data/county_24031_exp4_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 5
+      output: 'data/county_24031_exp5_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 6
+      output: 'data/county_24031_exp6_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 7
+      output: 'data/county_24031_exp7_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 8
+      output: 'data/county_24031_exp8_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 9
+      output: 'data/county_24031_exp9_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+    - dir: '../../../seir/MDexp2'
+      county: '24031'
+      expnum: 10
+      output: 'data/county_24031_exp10_all.csv'
+      #days_before_first: 5
+      #days_after_first: 30
+inference:
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp1_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp2_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp3_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp4_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp5_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp6_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp7_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp8_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp9_all.csv'
+   - formulation: 'decay-lsq'
+     ntrials: 10
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     population: 971777
+     reporting_factor: 1.0
+     input_csv: 'data/county_24031_exp10_all.csv'
+#   - formulation: 'decay-lsq'
+#     ntrials: 10
+#     sigma: 0.1923076923 # 1/5.2
+#     gamma: 0.25 # 1/4
+#     deltaP: 7
+#     population: 971777
+#     reporting_factor: 1.0
+#     input_csv: 'county_24031_exp1_all.csv'

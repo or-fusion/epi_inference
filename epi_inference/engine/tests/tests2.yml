@@ -1,0 +1,13 @@
+---
+value1: 1
+valueA: 'A'
+
+---
+test6:
+-   workflow: task1
+    value:  ${valueA}
+    output: test6_output1.json
+-   workflow: task1
+    value:  ${value1}
+    output: test6_output2.json
+

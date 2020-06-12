@@ -1,0 +1,15 @@
+This folder contains the input necessary to run some test simulations
+with Florida configuration for testing the inference results.
+
+A particular config is run using:
+> python ../path/to/simulate.py -c config_R0_1.25.yml -n100
+... Run this for all the config_R0_x.xx.yml files to generate the simulated data
+(where you need to use the path to your simulate.py from the COVIDScenarioPipeline)
+
+After you run the simulations and build the results, you need to run
+> python convert-parquet-data.py
+This will create the csv files needed for the inference tests.
+These are written to:
+./single_county_inference
+
+

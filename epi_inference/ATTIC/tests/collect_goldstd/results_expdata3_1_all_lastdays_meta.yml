@@ -1,0 +1,13 @@
+configuration:
+  analysis_window:
+    days: 30
+  county: '24031'
+  deltaP: 7
+  formulation: decay-lsq
+  gamma: 0.25
+  input_csv: collect_goldstd/expdata3_1_all.csv
+  ntrials: 10
+  output_csv: collect_output/results_expdata3_1_all_lastdays.csv
+  reporting_factor: 1.0
+  sigma: 0.1923076923
+timestamp: '2020-04-12 16:14:45.921076'

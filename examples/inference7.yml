@@ -1,0 +1,45 @@
+#
+# Example showing data collected from an experiment
+#
+expdata:
+-   factors:
+        expnum: [1, 2, 3]
+    dir: "expdata"
+    county: "24031"
+    days_before_first: 1
+    #days_after_first: 5
+    output: "collects/expdata7_${expnum}.csv"
+inference:
+-   factors:
+        expnum: [1]
+    formulation: 'decay-lsq'
+    ntrials: 10
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    county: "24031"
+    reporting_factor: 1.0
+    input_csv: "collects/expdata7_${expnum}.csv"
+    population_csv:
+        file: 'collects/expdata7_${expnum}_geodata.csv'
+        population: 'pop2010'
+        index: 'geoid'
+    output_csv: 'collects/results_expdata7_decay_lsq_all.csv'
+-   factors:
+        expnum: [1, 2, 3]
+        window: [60, 120, 180]
+    formulation: 'decay-lsq'
+    ntrials: 10
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    county: "24031"
+    reporting_factor: 1.0
+    analysis_window:
+        days: ${window}
+    input_csv: "collects/expdata7_${expnum}.csv"
+    population_csv:
+        file: 'collects/expdata7_${expnum}_geodata.csv'
+        population: 'pop2010'
+        index: 'geoid'
+    output_csv: 'collects/results_expdata7_decay_lsq_all.csv'

@@ -1,0 +1,16 @@
+configuration:
+  county: '24031'
+  dir: ../../../examples/expdata
+  expnum: 2
+  factor_levels:
+    expnum: '2'
+  factors: null
+  output: output/expdata3_2_all.csv
+  verbose: true
+  workflow: expdata
+timestamp: '2020-06-02 08:43:54.646703'
+workflow parameters:
+  R0: 2.7777777777777777
+  beta: 0.6944444444444444
+  gamma: 0.25
+  sigma: 0.1923076923076923

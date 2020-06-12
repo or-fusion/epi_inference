@@ -1,0 +1,34 @@
+inference:
+-   factors:
+        workflow: ['decay-lsq', 'decay-blike']
+    workflow: '${workflow}'
+    input_csv: "collect_goldstd/countydata1_FL.csv"
+    output_json: "collect_output/results_county1_${workflow}_all.csv"
+-   workflow: 'decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    county: '12121'
+    reporting_factor: 1.0
+    input_csv: "collect_goldstd/countydata1_FL.csv"
+    population_csv:
+        file: "../../examples/countydata/FL_county_population.csv"
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_csv: "collect_output/results_countydata1_12121_decay-lsq_all.csv"
+-   factors:
+        workflow: ['multinode-decay-lsq']
+    workflow: '${workflow}'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collect_goldstd/countydata1_FL.csv"
+    population_csv:
+        file: "../../examples/countydata/FL_county_population.csv"
+        population: 'pop_2019'
+        index: 'FIPS'
+    bootstrap:
+        n: 10
+        seed: 1298798934
+    output_csv: "collect_output/results_countydata1_multinode_all.csv"

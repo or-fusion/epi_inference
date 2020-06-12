@@ -1,0 +1,46 @@
+
+
+
+
+Dimension of data we report:
+- realizations (or "runs" or "scenarios")
+  - time-windows (or "time")
+    - counties (or "nodes" or "space")
+
+** Let's 
+- realizations (or "runs" or "scenarios")
+  - counties (or "nodes" or "space")
+    " do not need separate json blocks)
+    - time-windows (or "time")
+
+- (hierarchy is flexible)
+- likely better to put counties then time
+- the "actual" data is (maybe) just another "run")
+
+
+
+
+Workflow #1:
+         - for each scenario
+                  - load data
+                  - perform reconstruction for single scenario
+                  - for each window
+                    - solve all counties simultaneously
+
+Workflow #2:
+         - for each scenario
+                  - load data
+                  - perform reconstruction for single scenario
+                  - for each window
+                    - for each county
+                      - solve individual county for beta
+
+Workflow #3:
+         - for each scenario
+                  - load data
+                  - perform reconstruction for single scenario
+                  - solve one formulation for all counties and windows
+
+
+NAMING CURRENTLY SUCKS
+

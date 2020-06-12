@@ -1,0 +1,14 @@
+configuration:
+  county: '24031'
+  dir: ../../examples/expdata
+  expnum: 3
+  factor_levels:
+    expnum: '3'
+  factors: null
+  output: collect_output/expdata3_3_all.csv
+simulation parameters:
+  R0: 2.5555555555555554
+  beta: 0.6388888888888888
+  gamma: 0.25
+  sigma: 0.1923076923076923
+timestamp: '2020-04-12 15:20:21.492446'

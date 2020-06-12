@@ -1,0 +1,2 @@
+"est_beta","status","msg","bootstrap_mean_beta","bootstrap_5%","bootstrap_95%","num_counties","fraction_of_counties_with_cases","formulation"
+0.3277465836696156,"ok","Optimal solution found",0.3335131416026158,0.3273884738726883,0.3600977895728882,7,1.0,"multinode-decay-lsq"

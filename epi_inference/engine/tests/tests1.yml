@@ -1,0 +1,33 @@
+test1:
+-   workflow: task1
+    value:  A
+    output: test1_output1.json
+-   workflow: task1
+    value:  1
+    output: test1_output2.json
+
+test2:
+-   workflow: task1
+    value:  !LoadYAMLFile value.yml
+    output: test2_output1.json
+
+test3:
+-   workflow: execute_blocks
+    blocks:
+    - test1
+    - test2
+
+test4:
+-   workflow: execute_blocks
+    num_processes: 2
+    blocks:
+    - test1
+    - test2
+
+test5:
+-   workflow: execute_blocks
+    num_processes: 2
+    blocks:
+    - test1
+    - test2
+

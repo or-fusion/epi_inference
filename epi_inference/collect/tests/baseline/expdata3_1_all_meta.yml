@@ -1,0 +1,15 @@
+configuration:
+  county: '24031'
+  dir: ../../../examples/expdata
+  expnum: 1
+  output: output/expdata3_1_all.csv
+  verbose: true
+  workflow: expdata
+timestamp: '2020-06-02 08:43:56.642837'
+warnings:
+- 'WARNING: over-writing file output/expdata3_1_all.csv'
+workflow parameters:
+  R0: 3.0
+  beta: 0.75
+  gamma: 0.25
+  sigma: 0.1923076923076923

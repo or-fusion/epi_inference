@@ -1,0 +1,13 @@
+configuration:
+  days_before_first: 3
+  dir: ../../examples/countydata
+  files:
+  - FL_12001.csv
+  - FL_12003.csv
+  - FL_12005.csv
+  - FL_12007.csv
+  - FL_12009.csv
+  - FL_12011.csv
+  - FL_12013.csv
+  output: collect_output/countydata1_FL.csv
+timestamp: '2020-04-13 21:50:11.868933'

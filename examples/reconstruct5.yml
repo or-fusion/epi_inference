@@ -1,0 +1,43 @@
+collect:
+-   factors:
+        state: [ "FL" ]
+    workflow: casedata
+    dir: "countydata"
+    files:
+        - "FL_12001.csv"
+        - "FL_12003.csv"
+        - "FL_12005.csv"
+        - "FL_12007.csv"
+        - "FL_12009.csv"
+        - "FL_12011.csv"
+        - "FL_12013.csv"
+    days_before_first: 3
+    output: collects/countydata5_${state}.csv
+reconstruct:
+-   workflow: reconstruction_deterministic_delay
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    #county: '12011'
+    reporting_factor: 1.0
+    input_csv: "collects/countydata5_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: 'collects/recon_det_countydata5_FL.json'
+    verbose: true
+-   workflow: reconstruction_stochastic
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    #county: '12011'
+    reporting_factor: 1.0
+    input_csv: "collects/countydata5_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: 'collects/recon_stoch_countydata5_FL.json'
+    verbose: true
+    n_steps_per_day: 4

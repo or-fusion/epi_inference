@@ -1,0 +1,17 @@
+configuration:
+  days_before_first: 3
+  dir: ../../../examples/countydata
+  files:
+  - FL_12001.csv
+  - FL_12003.csv
+  - FL_12005.csv
+  - FL_12007.csv
+  - FL_12009.csv
+  - FL_12011.csv
+  - FL_12013.csv
+  output: collect_output/countydata1_FL.csv
+  verbose: true
+  workflow: casedata
+timestamp: '2020-06-02 08:40:44.853024'
+warnings:
+- 'WARNING: over-writing file collect_output/countydata1_FL.csv'

@@ -1,0 +1,74 @@
+deterministic:
+-   workflow: reconstruction_deterministic_delay
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "../../collect/tests/baseline/countydata1_FL.csv"
+    population_csv:
+        file: "../../../examples/countydata/FL_county_population.csv"
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: "output/recon_countydata1_all.json"
+-   workflow: reconstruction_deterministic_delay
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "../../collect/tests/baseline/countydata1_FL.csv"
+    county: "12011"
+    population_csv:
+        file: "../../../examples/countydata/FL_county_population.csv"
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: "output/recon_countydata1_12011.json"
+
+stochastic:
+-   workflow: reconstruction_stochastic
+    factors:
+        test_factor: ["factor_value"]
+        seed: [39847938, 38479387]
+    seed: ${seed}
+    reporting_multiplier: 10
+    n_steps_per_day: 4
+    input_csv: "../../collect/tests/baseline/countydata1_FL.csv"
+    population_csv:
+        file: "../../../examples/countydata/FL_county_population.csv"
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: "output/recon_stoch_countydata1_all_${seed}.json"
+-   workflow: reconstruction_stochastic
+    seed: 39847938
+    county: "12011"
+    reporting_multiplier: 10
+    n_steps_per_day: 4
+    input_csv: "../../collect/tests/baseline/countydata1_FL.csv"
+    population_csv:
+        file: "../../../examples/countydata/FL_county_population.csv"
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: "output/recon_stoch_countydata1_12011.json"
+
+json2csv:
+-   workflow: recon_json2csv
+    input_json: 'baseline/recon_stoch_countydata1_all_38479387.json'
+    output_csv: 'output/recon_stoch_countydata1_all_38479387_flatten.csv'
+    format: flatten
+-   workflow:  recon_many_json2csv
+    input_json: 'baseline/recon_stoch_countydata1_all_*.json'
+    output_csv: 'output/recon_stoch_countydata1_all_flatten.csv'
+    format: flatten
+-   workflow: recon_json2csv
+    input_json: 'baseline/recon_stoch_countydata1_all_38479387.json'
+    output_csv: 'output/recon_stoch_countydata1_all_38479387_narrow.csv'
+    #format: narrow
+-   workflow:  recon_many_json2csv
+    input_json: 'baseline/recon_stoch_countydata1_all_*.json'
+    output_csv: 'output/recon_stoch_countydata1_all_narrow.csv'
+    #format: narrow
+
+recon_summary:
+-   workflow: recon_summary
+    input_json: 'baseline/recon_stoch_countydata1_all_*.json'
+    output_csv: 'output/recon_stoch_countydata1_all_summary.csv'
+    scenario_index: seed

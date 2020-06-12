@@ -1,0 +1,147 @@
+casedata:
+-   factors:
+        state: [ "FL" ]
+    dir: "countydata"
+    files:
+        - "FL_12001.csv"
+        - "FL_12003.csv"
+        - "FL_12005.csv"
+        - "FL_12007.csv"
+        - "FL_12009.csv"
+        - "FL_12011.csv"
+    days_before_first: 3
+    output: collects/countydata6_${state}.csv
+-   factors:
+        state: [ "FL" ]
+    dir: "countydata"
+    files:
+        - "FL_12001.csv"
+        - "FL_12003.csv"
+        - "FL_12005.csv"
+        - "FL_12007.csv"
+        - "FL_12009.csv"
+        - "FL_12011.csv"
+    days_before_first: 3
+    column: Deaths
+    output: collects/countydata6_${state}_deaths.csv
+inference:
+-   formulation: 'multibeta-multiwin-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    analysis_window:
+        days: 7
+    output_json: 'collects/results_countydata6_FL_multibeta_multiwin.json'
+-   formulation: 'multibeta-multiwin-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 200.0
+    input_csv: "collects/countydata6_FL_deaths.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    analysis_window:
+        days: 7
+    output_json: 'collects/results_countydata6_FL_multibeta_multiwin_deaths.json'
+ignore:
+-   formulation: 'multibeta-singleomega-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: 'collects/results_countydata6_FL_multibeta.json'
+-   formulation: 'multibeta-singleomegawin-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: 'collects/results_countydata6_FL_multibeta_win1.json'
+-   formulation: 'multibeta-singleomegawin-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    analysis_window:
+        days: 7
+    output_json: 'collects/results_countydata6_FL_multibeta_win7.json'
+-   formulation: 'multibeta-singleomegawin-decay-l1'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    analysis_window:
+        days: 7
+    output_json: 'collects/results_countydata6_FL_multibeta_win7.json'
+-   formulation: 'multinode-decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_csv: 'collects/results_countydata6_FL_multinode.csv'
+-   formulation: 'decay-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_csv: 'collects/results_countydata6_FL.csv'
+OLD:
+-   formulation: 'multinode-decay-multibeta-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_csv: 'collects/results_countydata6_FL_multinode_multibeta.csv'
+-   formulation: 'decay-multibeta-lsq'
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    reporting_factor: 1.0
+    input_csv: "collects/countydata6_FL.csv"
+    population_csv:
+        file: 'countydata/FL_county_population.csv'
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_csv: 'collects/results_countydata6_FL_multibeta.csv'

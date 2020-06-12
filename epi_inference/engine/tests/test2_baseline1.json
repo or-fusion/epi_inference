@@ -1,0 +1,1 @@
+{"workflow": "task1", "value": ["a", 1, 2.2], "output": "test2_output1.json", "verbose": true, "factors": null, "factor_levels": {}}

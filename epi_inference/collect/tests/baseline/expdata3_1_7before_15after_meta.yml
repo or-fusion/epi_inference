@@ -1,0 +1,15 @@
+configuration:
+  county: '24031'
+  days_after_first: 15
+  days_before_first: 7
+  dir: ../../../examples/expdata
+  expnum: 1
+  output: output/expdata3_1_7before_15after.csv
+  verbose: true
+  workflow: expdata
+timestamp: '2020-06-02 08:43:59.322273'
+workflow parameters:
+  R0: 3.0
+  beta: 0.75
+  gamma: 0.25
+  sigma: 0.1923076923076923

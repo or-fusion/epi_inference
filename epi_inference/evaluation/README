@@ -1,0 +1,7 @@
+This folder contains scripts to provide evaluations of the inference engine on
+simulated data.
+pipeline_simulation: contains the configuration files for running the COVIDScenarioPipeline
+                     and generating simulated data
+simulation-data: contains the processing scripts to take data from pipeline_simulation
+                 and process it to be used as example data for epipinf
+reconstuction: contains scripts to generate reconstruction comparisons

@@ -1,0 +1,11 @@
+---
+value1: 1
+value2: "${value1}${value1}"
+value3: "${value2}${value2}"
+
+---
+test7:
+-   workflow: task1
+    value: ${value3}
+    output: test7_output1.json
+

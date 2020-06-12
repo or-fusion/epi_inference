@@ -1,0 +1,18 @@
+expdata:
+    - dir: 'expdata'
+      county: '24031'
+      expnum: 1
+      output: 'collects/exp_24031_1.csv'
+      days_before_first: 7
+      days_after_first: 60
+inference:
+   - formulation: 'decay-lsq'
+     sigma: 0.1923076923 # 1/5.2
+     gamma: 0.25 # 1/4
+     deltaP: 7
+     county: '24031'
+     reporting_factor: 1.0
+     input_csv: 'collects/exp_24031_1.csv'
+     output_csv: 'collects/results_exp_24031_1.csv'
+     ntrials: 10
+     #verbose: true

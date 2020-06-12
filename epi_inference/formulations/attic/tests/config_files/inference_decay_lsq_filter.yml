@@ -1,0 +1,21 @@
+inference:
+-   workflow: 'decay-lsq'
+    ntrials: 10
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    county: '24031'
+    reporting_factor: 1.0
+    input_csv: "collect_goldstd/expdata3_1_all.csv"
+    output_csv: "collect_output/results_expdata3_1_all.csv"
+-   workflow: 'decay-lsq'
+    ntrials: 10
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    county: '24031'
+    reporting_factor: 1.0
+    input_csv: "collect_goldstd/expdata3_1_all.csv"
+    output_csv: "collect_output/results_expdata3_1_all_lastdays.csv"
+    analysis_window:
+        days: 30

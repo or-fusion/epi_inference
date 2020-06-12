@@ -1,0 +1,9 @@
+---
+value_file: "value.yml"
+
+---
+test8:
+-   workflow: task1
+    value:  !LoadYAMLFile '${value_file}'
+    output: test8_output1.json
+

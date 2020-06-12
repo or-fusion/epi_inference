@@ -1,0 +1,25 @@
+inference:
+-   factors:
+        workflow: ['decay-lsq', 'decay-blike']
+    workflow: '${workflow}'
+    ntrials: 10
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    county: '24031'
+    reporting_factor: 1.0
+    input_csv: "collect_goldstd/expdata3_1_all.csv"
+    population_csv:
+        file: "collect_goldstd/expdata3_1_all_geodata.csv"
+        population: 'pop2010'
+        index: 'geoid'
+    output_csv: "collect_output/results_expdata3_inference_all.csv"
+-   workflow: 'decay-lsq'
+    ntrials: 10
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.25 # 1/4
+    deltaP: 7
+    county: '24031'
+    reporting_factor: 1.0
+    input_csv: "collect_goldstd/expdata3_1_all.csv"
+    output_csv: "collect_output/results_expdata3_decay-lsq_all.csv"

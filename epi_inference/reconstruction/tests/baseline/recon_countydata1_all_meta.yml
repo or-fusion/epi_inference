@@ -1,0 +1,14 @@
+configuration:
+  deltaP: 7
+  gamma: 0.25
+  input_csv: ../../collect/tests/baseline/countydata1_FL.csv
+  output_json: output/recon_countydata1_all.json
+  population_csv:
+    file: ../../../examples/countydata/FL_county_population.csv
+    index: FIPS
+    population: pop_2019
+  reporting_factor: 1.0
+  sigma: 0.1923076923
+  verbose: true
+  workflow: reconstruction_deterministic_delay
+timestamp: '2020-06-02 11:22:37.767845'
