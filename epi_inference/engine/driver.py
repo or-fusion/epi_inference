@@ -1,11 +1,13 @@
 __all__ = ['driver', 'run', 'run_block_multiworkflow']
 
+import os
 import sys
 import datetime
 import argparse
 import yaml
 import pprint
 from pyutilib.misc import Options
+import pyutilib.services
 try:
     import joblib
     joblib_available = True
@@ -18,7 +20,14 @@ from .config_parameters import set_config_parameters, get_config_parameters
 from .misc import save_metadata
 
 
-def driver():
+def driver(tmpdir=None):
+    if os.environ.get('TMPDIR',tmpdir) is not None:
+        _tmpdir = os.environ.get('TMPDIR',tmpdir)
+        if not os.path.exists(_tmpdir):
+            os.makedirs(_tmpdir)
+        #os.environ['TMPDIR'] = tmpdir
+        pyutilib.services.TempfileManager.tempdir = _tmpdir
+
     Parser = argparse.ArgumentParser(description='inference models')
     Parser.add_argument('-v', '--verbose', action='store_true', default=False,
                     help='Verbosity flag')
