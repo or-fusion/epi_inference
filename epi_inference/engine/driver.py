@@ -19,6 +19,7 @@ from .util import factorial_iterator, load_configfile
 from .config_parameters import set_config_parameters, get_config_parameters
 from .misc import save_metadata
 
+global_tempdir = None
 
 def driver(tmpdir=None):
     if os.environ.get('TMPDIR',tmpdir) is not None:
@@ -27,6 +28,8 @@ def driver(tmpdir=None):
             os.makedirs(_tmpdir)
         #os.environ['TMPDIR'] = tmpdir
         pyutilib.services.TempfileManager.tempdir = _tmpdir
+        global global_tempdir
+        global_tempdir = _tmpdir
 
     Parser = argparse.ArgumentParser(description='inference models')
     Parser.add_argument('-v', '--verbose', action='store_true', default=False,
@@ -50,7 +53,9 @@ def driver(tmpdir=None):
     run(args)
 
 
-def run_workflow(task, CONFIG, data):
+def run_workflow(task, CONFIG, data, tempdir):
+    if tempdir:
+        pyutilib.services.TempfileManager.tempdir = tempdir
     print("\nExecuting Workflow: "+task.name)
     task.run( data, CONFIG )
 
@@ -80,7 +85,7 @@ def run_block_serial(workflow_blocks, args, config_parameters):
             if workflow not in tasks:
                 print("WARNING: Unknown workflow '%s' specified in block" % workflow)
                 continue
-            run_workflow(tasks[workflow], CONFIG, workflow_blocks)
+            run_workflow(tasks[workflow], CONFIG, workflow_blocks, global_tempdir)
 
 
 def run_block_parallel_factors(workflow_blocks, args, config_parameters):
@@ -112,7 +117,7 @@ def run_block_parallel_factors(workflow_blocks, args, config_parameters):
                     continue
                 good_configs.append( CONFIG )
             with joblib.Parallel(n_jobs=args.np, verbose=args.verbose*10) as parallel:
-                parallel( joblib.delayed(run_workflow)(tasks[CONFIG['workflow']], CONFIG, workflow_blocks) for CONFIG in good_configs)
+                parallel( joblib.delayed(run_workflow)(tasks[CONFIG['workflow']], CONFIG, workflow_blocks, global_tempdir) for CONFIG in good_configs)
         else:
             # Serial
             for CONFIG in config_list:
@@ -120,7 +125,7 @@ def run_block_parallel_factors(workflow_blocks, args, config_parameters):
                 if workflow not in tasks:
                     print("WARNING: Unknown workflow '%s' specified in block" % workflow)
                     continue
-                run_workflow(tasks[workflow], CONFIG, workflow_blocks)
+                run_workflow(tasks[workflow], CONFIG, workflow_blocks, global_tempdir)
 
 def run_block_parallel_workflows(workflow_blocks, args, config_parameters):
     #
@@ -152,12 +157,12 @@ def run_block_parallel_workflows(workflow_blocks, args, config_parameters):
         if len(workflows) >= args.min_parallel_workflows:
             # Parallel
             with joblib.Parallel(n_jobs=args.np, verbose=args.verbose*10) as parallel:
-                parallel( joblib.delayed(run_workflow)(tasks[CONFIG['workflow']], CONFIG, workflow_blocks) for CONFIG in workflows)
+                parallel( joblib.delayed(run_workflow)(tasks[CONFIG['workflow']], CONFIG, workflow_blocks, global_tempdir) for CONFIG in workflows)
         else:
             # Serial
             for CONFIG in workflows:
                 workflow = CONFIG['workflow']
-                run_workflow(tasks[workflow], CONFIG, workflow_blocks)
+                run_workflow(tasks[workflow], CONFIG, workflow_blocks, global_tempdir)
 
 
 def run_block_multiworkflow(CONFIG, warnings, config):
