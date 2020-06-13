@@ -137,11 +137,7 @@ def create_inference_window_formulation(*, recon, mobility, analysis_window, ver
     # define the expression for estimated transmissions
     def _infection_process(m, i, w, t):
 
-        percent_mobile = 0
-        if i in mobility:
-            percent_mobile = sum(mobility[i][j] for j in mobility[i] if j in nodes)/populations[i]
-
-        return m.beta[i,w] * ((I1_data[i][t] + I2_data[i][t] + I3_data[i][t]) /populations[i] * S_data[i][t] * (1-eta*percent_mobile)) + sum(m.beta[j,w] * ((I1_data[j][t] + I2_data[j][t] + I3_data[j][t]) * S_data[i][t] * mobility[i][j] * eta / (populations[j]*populations[i])) for j in mobility[i] if j in nodes)
+        return m.beta[i,w] * ((I1_data[i][t] + I2_data[i][t] + I3_data[i][t]) /populations[i] * S_data[i][t] * (1-eta*percent_mobile[i])) + sum(m.beta[j,w] * ((I1_data[j][t] + I2_data[j][t] + I3_data[j][t]) * S_data[i][t] * mobility[i][j] * eta / (populations[j]*populations[i])) for j in mobility[i] if j in nodes)
 
     model.T_hat = pe.Expression(model.NODES, WINDOW_TIMES, rule=_infection_process)
     timing.toc('built infection process')
