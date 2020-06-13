@@ -5,37 +5,9 @@ import pandas as pd
 import shutil
 from pyomo.common import fileutils as fileutils
 from pyutilib.misc import Options as Options
+
 from epi_inference.engine import driver
-import json
-from jsondiff import diff
-
-def compare_csv(output, gold, index_col=None, check_exact=False, sort=True):
-    if index_col is None:
-        outputdf = pd.read_csv(output)
-        golddf = pd.read_csv(gold)
-    else:
-        outputdf = pd.read_csv(output, index_col=index_col)
-        golddf = pd.read_csv(gold, index_col=index_col)
-
-    # the dataframes may be the same, but just in a different order
-    if sort:
-        columns = list(outputdf.columns)
-        outputdf.sort_values(by=columns, inplace=True, ignore_index=True)
-        golddf.sort_values(by=columns, inplace=True, ignore_index=True)
-    pd.testing.assert_frame_equal(left=outputdf, right=golddf, check_exact=check_exact)
-    return outputdf, golddf
-
-def compare_json(output, gold, check_exact=False):            # pragma: no cover
-    with open(output,'r') as INPUT:
-        outputdf = json.load(INPUT)
-    with open(gold,'r') as INPUT:
-        golddf = json.load(INPUT)
-    d = diff(outputdf, golddf)
-    if len(d) != 0:
-        print('DIFFERENCES IN JSON')
-        print(d)
-    assert(len(d) == 0)
-    return outputdf, golddf
+from epi_inference.util import compare_csv, compare_json
 
 
 class TestReconstruct():

@@ -5,7 +5,7 @@ Setup for epi_inference package
 import os
 from setuptools import setup, find_packages
 
-requires=[ 'pyomo', 'pyyaml', 'jsondiff' ]
+requires=[ 'pyomo', 'pyyaml', 'jsondiff', 'deepdiff[murmur]' ]
 
 setup(name="epi_inference",
     version='1.0.dev0',

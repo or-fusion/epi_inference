@@ -1,20 +1,12 @@
 import pytest
 import os
 import os.path
-import pandas as pd
 import shutil
 from pyomo.common import fileutils as fileutils
 from pyutilib.misc import Options as Options
+
+from epi_inference.util import compare_csv
 from epi_inference.engine import driver
-
-# collect yaml
-# dir, county, days_before_first, days_after_first, output
-
-def compare_csv(output, gold, index_col, check_exact=False):
-    outputdf = pd.read_csv(output, index_col=index_col)
-    golddf = pd.read_csv(gold, index_col=index_col)
-    pd.testing.assert_frame_equal(left=outputdf, right=golddf, check_exact=check_exact)
-    return outputdf, golddf
 
 
 class TestCollect():
@@ -27,15 +19,7 @@ class TestCollect():
     @classmethod
     def teardown_class(cls):
         os.chdir(cls._origdir)
-    """
-    def setup_method(self, method):
-        if os.path.exists('output'):            # pragma: no cover
-            shutil.rmtree('output')
 
-    def teardown_method(self, method):
-        if os.path.exists('output'):            # pragma: no cover
-            shutil.rmtree('output')
-    """
     def test_collect_exp(self):
         # run a collection of data for 24031
         args = Options()
