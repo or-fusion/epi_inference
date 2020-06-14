@@ -6,7 +6,7 @@ from pyomo.environ import SolverFactory, value
 from pyomo.opt import check_optimal_termination
 
 
-def run_multinode_mobility_window_decay_lsq(*, recon, mobility, analysis_window, verbose=False):
+def run_multinode_mobility_window_decay_lsq(*, recon, mobility, analysis_window, select_window=None, verbose=False):
     """
     This function solves the least-squares inference inference formulation
     using the decay-based reconstruction function.
@@ -22,6 +22,9 @@ def run_multinode_mobility_window_decay_lsq(*, recon, mobility, analysis_window,
        in the objective function. If None, then the full set of data will be used.
        The key "days" indicates the number of days from the end of the data that 
        should be used in the objective function.
+    select_window : int
+       Integer value that specifies the window that will be used in this estimation.  If None,
+       then all windows are used.  If =1, then the last window is used.
     verbose : bool
        If true, then more output is printed to the console when the analysis is run
     """
@@ -30,6 +33,7 @@ def run_multinode_mobility_window_decay_lsq(*, recon, mobility, analysis_window,
         recon=recon,
         mobility=mobility,
         analysis_window=analysis_window,
+        select_window=select_window,
         verbose=verbose
     )
 
@@ -71,7 +75,7 @@ def run_multinode_mobility_window_decay_lsq(*, recon, mobility, analysis_window,
     return results
 
 
-def create_inference_window_formulation(*, recon, mobility, analysis_window, verbose=False):
+def create_inference_window_formulation(*, recon, mobility, analysis_window, select_window, verbose=False):
     """
     Creates a one-step-ahead inference model using a decay
     model with 3 I compartments. The model is written in terms of absolute
@@ -134,6 +138,15 @@ def create_inference_window_formulation(*, recon, mobility, analysis_window, ver
             WINDOW_TIMES.append((i,j)) 
         WINDOWS.append(i)
     timing.toc('built windows')
+
+    if select_window is not None:
+        if select_window >= 0:
+            if select_window >= len(WINDOWS):
+                print("ERROR: the selected window %s is not in list of WINDOWS: %s" % (str(select_window), str(WINDOWS)))
+                return None
+        select_window = WINDOWS[select_window]
+        WINDOWS = [select_window]
+        WINDOW_TIMES = [(i,j) for i,j in WINDOW_TIMES if i==select_window]
 
     # transmission parameter
     model.beta = pe.Var(model.NODES, WINDOWS, initialize=1.0, bounds=(0,None)) 
