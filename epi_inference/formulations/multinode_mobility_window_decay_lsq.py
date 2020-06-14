@@ -15,6 +15,8 @@ def run_multinode_mobility_window_decay_lsq(*, recon, mobility, analysis_window,
     ----------
     recon : dict()
        A dictionary with reconstruction data, indexed by FIPS codes for US counties.
+    mobility : dict()
+        A dictionary with inter-county mobility rates.
     analysis_window : dict or None
        This is a dictionary indicating the window of time that should be used 
        in the objective function. If None, then the full set of data will be used.
@@ -78,12 +80,15 @@ def create_inference_window_formulation(*, recon, mobility, analysis_window, ver
 
     Parameters
     ----------
+    recon : dict()
+       A dictionary with reconstruction data, indexed by FIPS codes for US counties.
+    mobility : dict()
+        A dictionary with inter-county mobility rates.
     analysis_window : dict or None
        This is a dictionary indicating the window of time that should be used 
        in the objective function. If None, then the full set of data will be used.
        The key "days" indicates the number of days from the end of the data that 
        should be used in the objective function.
-
     """
     window = int(analysis_window.get('days',14))
     assert(window >= 1)
