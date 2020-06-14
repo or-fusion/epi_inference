@@ -100,7 +100,7 @@ def compare_json(output_file, baseline_file, significant_digits=8):            #
         output = json.load(INPUT)
     with open(baseline_file,'r') as INPUT:
         baseline = json.load(INPUT)
-    d = DeepDiff(output, baseline, significant_digits=significant_digits)
+    d = DeepDiff(baseline, output, significant_digits=significant_digits)
     if len(d) != 0:
         print('DIFFERENCES IN JSON')
         print(d)
