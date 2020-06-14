@@ -32,8 +32,8 @@ def run(CONFIG, warnings):
     if True:
     #try:
         if CONFIG.get('version','new') == 'new':
-            results = run_multinode_mobility_window_decay_lsq(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], verbose=CONFIG['verbose'])
-        elif CONFIG.get('version') == 'poek':
+            results = run_multinode_mobility_window_decay_lsq(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], select_window=CONFIG.get('select_window', None), verbose=CONFIG['verbose'])
+        elif CONFIG.get('version','new') == 'poek':
             results = run_multinode_mobility_window_decay_lsq_poek(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], verbose=CONFIG['verbose'])
         elif CONFIG.get('version') == 'pyomo_old':
             results = run_multinode_mobility_window_decay_lsq_old(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], verbose=CONFIG['verbose'])
@@ -58,10 +58,11 @@ class InferenceMobilityWindows(Task):
             "Estimate beta over different time windows using inter-county mobility information.")
 
     def validate(self, args):
-        pass
+        valid_options = set(['reconstruction_json', 'mobility_json', 'output_json', 'version', 'analysis_window', 'select_window', 'verbose', 'factors', 'factor_levels', 'workflow'])
 
     def run(self, data, CONFIG):
         self._warnings = []
+        self.validate(CONFIG)
         run(CONFIG, self._warnings)
 
     def warnings(self):

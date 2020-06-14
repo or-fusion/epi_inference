@@ -6,6 +6,7 @@ import datetime
 import json
 import pandas as pd
 from deepdiff import DeepDiff
+import pprint
 
 
 def roundall(*args):
@@ -103,7 +104,7 @@ def compare_json(output_file, baseline_file, significant_digits=8):            #
     d = DeepDiff(baseline, output, significant_digits=significant_digits)
     if len(d) != 0:
         print('DIFFERENCES IN JSON')
-        print(d)
+        pprint.pprint(d)
     assert(len(d) == 0)
     return output, baseline
 

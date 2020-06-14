@@ -50,14 +50,29 @@ class TestInference():
     def test_mobility_window_poek(self):
         args = Options()
         args.block = 'mobility_windows_poek'
-        args.config_file = './config_files/tests1.yml'
-        args.verbose = True
-        driver.run(args)
-    
+
         # check that the json files match their baselines
         compare_json('./output/tests1_inference_unsampled_countydata1_all_poek.json', './baseline/tests1_inference_unsampled_countydata1_all.json')
 
         # cleanup the files we created
         os.remove('./output/tests1_inference_unsampled_countydata1_all_poek.json')
         os.remove('./output/tests1_inference_unsampled_countydata1_all_poek_meta.yml')
+
+    def test_select_mobility_window(self):
+        # run a collection of data for 24031
+        args = Options()
+        args.block = 'select_mobility_windows'
+        args.config_file = './config_files/tests1.yml'
+        args.verbose = True
+        driver.run(args)
+    
+        # check that the csv files load into dataframes that have the correct numbers and shapes
+        compare_json('./output/tests1_inference_unsampled_countydata1_all_select_last.json', './baseline/tests1_inference_unsampled_countydata1_all_select_last.json')
+        compare_json('./output/tests1_inference_unsampled_countydata1_all_select_3.json', './baseline/tests1_inference_unsampled_countydata1_all_select_last.json')
+    
+        # cleanup the files we created
+        os.remove('./output/tests1_inference_unsampled_countydata1_all_select_last.json')
+        os.remove('./output/tests1_inference_unsampled_countydata1_all_select_last_meta.yml')
+        os.remove('./output/tests1_inference_unsampled_countydata1_all_select_3.json')
+        os.remove('./output/tests1_inference_unsampled_countydata1_all_select_3_meta.yml')
 
