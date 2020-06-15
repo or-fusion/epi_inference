@@ -5,8 +5,9 @@ import pyomo.environ as pe
 from pyomo.environ import SolverFactory, value
 from pyomo.opt import check_optimal_termination
 
+from .util import get_windows
 
-def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analysis_window, verbose=False):
+def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analysis_window, select_window=None, verbose=False):
     """
     This function solves the least-squares inference inference formulation
     using the decay-based reconstruction function.
@@ -40,7 +41,7 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
     S_data = dict()
     populations = dict()
     percent_mobile = dict()
-    maxtimes=0
+    dates = None
     for nodeid in nodes:
         T_data[nodeid] = recon[nodeid]['transmissions']
         I1_data[nodeid] = recon[nodeid]['I1']
@@ -50,24 +51,13 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
         populations[nodeid] = recon[nodeid]['population']
         percent_mobile[nodeid] = sum(mobility[nodeid][j] for j in mobility[nodeid] if j in nodes)/populations[nodeid] if nodeid in mobility else 0
 
-        maxtimes = max(maxtimes, len(recon[nodeid]['transmissions']))
+        if dates is None:
+            dates = recon[nodeid]['dates']
     timing.toc('setup population and mobility information')
 
-    #if not hasattr(model, 'TIMES'):
-    #model.TIMES = pe.Set(initialize=[i for i in range(len(recon[nodeid]['transmissions']))], ordered=True)
-
     # define the tuples for the windows
-    WINDOW_TIMES = {}
-    window_days = window
-    for i in range(maxtimes):
-        if i % 7 != 0:
-            continue
-        if i < window_days:
-            continue
-        WINDOW_TIMES[i] = []
-        for j in range(i+1-window_days, i+1):
-            WINDOW_TIMES[i].append(j) 
-    timing.toc('built windows')
+    windows = get_windows(dates, window_days=window, select_window=select_window)
+    WINDOW_TIMES = windows.WINDOW_TIMES
 
     # get the approximate transmissions over the window period
     window_transmissions = dict()
@@ -82,7 +72,7 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
     for i in recon:
         county = {}
         county['FIPS'] = i
-        county['window_days'] = window_days
+        county['window_days'] = window
         county['date'] = [recon[i]['dates'][w] for w in WINDOW_TIMES]
         if i in nodes:
             county['population'] = recon[i]['population']

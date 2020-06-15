@@ -38,7 +38,7 @@ def run(CONFIG, warnings):
         elif CONFIG.get('version') == 'pyomo_old':
             results = run_multinode_mobility_window_decay_lsq_old(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], verbose=CONFIG['verbose'])
         elif CONFIG.get('version') == 'pyomo_iterative':
-            results = run_multinode_mobility_window_decay_lsq_iterative(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], verbose=CONFIG['verbose'])
+            results = run_multinode_mobility_window_decay_lsq_iterative(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], select_window=CONFIG.get('select_window', None), verbose=CONFIG['verbose'])
     else:
     #except Exception as err:
         print("ERROR: Unexpected exception '%s'" % str(err))

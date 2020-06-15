@@ -1,0 +1,121 @@
+{
+    "12001": {
+        "FIPS": "12001",
+        "window_days": 14,
+        "date": [
+            "2020-04-04"
+        ],
+        "population": 269043,
+        "beta": [
+            0.30953758477018195
+        ],
+        "status": [
+            "ok"
+        ],
+        "infections_in_window": [
+            106.0
+        ]
+    },
+    "12003": {
+        "FIPS": "12003",
+        "window_days": 14,
+        "date": [
+            "2020-04-04"
+        ],
+        "population": 29210,
+        "beta": [
+            0.26602453445920343
+        ],
+        "status": [
+            "ok"
+        ],
+        "infections_in_window": [
+            10.0
+        ]
+    },
+    "12005": {
+        "FIPS": "12005",
+        "window_days": 14,
+        "date": [
+            "2020-04-04"
+        ],
+        "population": 174705,
+        "beta": [
+            0.3335768828317642
+        ],
+        "status": [
+            "ok"
+        ],
+        "infections_in_window": [
+            31.0
+        ]
+    },
+    "12007": {
+        "FIPS": "12007",
+        "window_days": 14,
+        "date": [
+            "2020-04-04"
+        ],
+        "population": 28201,
+        "beta": [
+            0.7118635804093942
+        ],
+        "status": [
+            "ok"
+        ],
+        "infections_in_window": [
+            23.0
+        ]
+    },
+    "12009": {
+        "FIPS": "12009",
+        "window_days": 14,
+        "date": [
+            "2020-04-04"
+        ],
+        "population": 601942,
+        "beta": [
+            0.33072502589211206
+        ],
+        "status": [
+            "ok"
+        ],
+        "infections_in_window": [
+            96.0
+        ]
+    },
+    "12011": {
+        "FIPS": "12011",
+        "window_days": 14,
+        "date": [
+            "2020-04-04"
+        ],
+        "population": 1952778,
+        "beta": [
+            0.32491995569134785
+        ],
+        "status": [
+            "ok"
+        ],
+        "infections_in_window": [
+            2024.0
+        ]
+    },
+    "12013": {
+        "FIPS": "12013",
+        "window_days": 14,
+        "date": [
+            "2020-04-04"
+        ],
+        "population": 14105,
+        "beta": [
+            0.35897049147779003
+        ],
+        "status": [
+            "ok"
+        ],
+        "infections_in_window": [
+            5.0
+        ]
+    }
+}

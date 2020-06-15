@@ -5,6 +5,8 @@ import pyomo.environ as pe
 from pyomo.environ import SolverFactory, value
 from pyomo.opt import check_optimal_termination
 
+from .util import get_windows
+
 
 def run_multinode_mobility_window_decay_lsq(*, recon, mobility, analysis_window, select_window=None, verbose=False):
     """
@@ -22,9 +24,9 @@ def run_multinode_mobility_window_decay_lsq(*, recon, mobility, analysis_window,
        in the objective function. If None, then the full set of data will be used.
        The key "days" indicates the number of days from the end of the data that 
        should be used in the objective function.
-    select_window : int
-       Integer value that specifies the window that will be used in this estimation.  If None,
-       then all windows are used.  If =1, then the last window is used.
+    select_window : str
+       ISO date format that the window that will be used in this estimation.  If None,
+       then all windows are used.
     verbose : bool
        If true, then more output is printed to the console when the analysis is run
     """
@@ -112,6 +114,7 @@ def create_inference_window_formulation(*, recon, mobility, analysis_window, sel
     S_data = dict()
     populations = dict()
     percent_mobile = dict()
+    dates = None
     for nodeid in nodes:
         T_data[nodeid] = recon[nodeid]['transmissions']
         I1_data[nodeid] = recon[nodeid]['I1']
@@ -121,32 +124,15 @@ def create_inference_window_formulation(*, recon, mobility, analysis_window, sel
         populations[nodeid] = recon[nodeid]['population']
         percent_mobile[nodeid] = sum(mobility[nodeid][j] for j in mobility[nodeid] if j in nodes)/populations[nodeid] if nodeid in mobility else 0
 
-        if not hasattr(model, 'TIMES'):
-            model.TIMES = pe.Set(initialize=[i for i in range(len(recon[nodeid]['transmissions']))], ordered=True)
+        if dates is None:
+            dates = recon[nodeid]['dates']
     timing.toc('setup population and mobility information')
 
     # define the tuples for the windows
-    WINDOWS = list()
-    WINDOW_TIMES = list()
-    model.window_days = window
-    for i in range(len(model.TIMES)):
-        if i % 7 != 0:
-            continue
-        if i < model.window_days:
-            continue
-        for j in range(i+1-model.window_days, i+1):
-            WINDOW_TIMES.append((i,j)) 
-        WINDOWS.append(i)
-    timing.toc('built windows')
-
-    if select_window is not None:
-        if select_window >= 0:
-            if select_window >= len(WINDOWS):
-                print("ERROR: the selected window %s is not in list of WINDOWS: %s" % (str(select_window), str(WINDOWS)))
-                return None
-        select_window = WINDOWS[select_window]
-        WINDOWS = [select_window]
-        WINDOW_TIMES = [(i,j) for i,j in WINDOW_TIMES if i==select_window]
+    windows = get_windows(dates, window_days=window, select_window=select_window)
+    model.TIMES = pe.Set(initialize=windows.TIMES, ordered=True)
+    WINDOWS = windows.WINDOWS
+    WINDOW_TIMES = windows.WINDOW_TIMES_LIST
 
     # transmission parameter
     model.beta = pe.Var(model.NODES, WINDOWS, initialize=1.0, bounds=(0,None)) 
@@ -177,5 +163,6 @@ def create_inference_window_formulation(*, recon, mobility, analysis_window, sel
         model.window_transmissions[i] = d
         
     model.WINDOWS = WINDOWS
+    model.window_days = window
     return model
 
