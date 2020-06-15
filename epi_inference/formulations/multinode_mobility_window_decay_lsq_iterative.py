@@ -97,7 +97,6 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
         model.T_hat = pe.Expression(model.NODES, WINDOW_TIMES[w], rule=_infection_process)
         timing.toc('built infection process')
 
-        #model.total_lse = pe.Objective(expr=sum(model.T_hat[i,t] for i,t in model.))
         model.total_lse = pe.Objective(expr=sum((model.T_hat[i,t] - T_data[i][t])**2 for i,t in model.T_hat))
         timing.toc('built objective')
 
