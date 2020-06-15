@@ -36,7 +36,7 @@ class TestInference():
         compare_json('./output/tests1_inference_unsampled_countydata1_all.json', './baseline/tests1_inference_unsampled_countydata1_all.json')
 
         compare_json('./output/tests1_inference_unsampled_countydata1_all_new.json', './baseline/tests1_inference_unsampled_countydata1_all.json')
-        compare_json('./output/tests1_inference_unsampled_countydata1_all_pyomo_iterative.json', './baseline/tests1_inference_unsampled_countydata1_all.json', significant_digits=3)
+        compare_json('./output/tests1_inference_unsampled_countydata1_all_pyomo_iterative.json', './baseline/tests1_inference_unsampled_countydata1_all.json', abs_tol=1e-3)
     
         # cleanup the files we created
         os.remove('./output/tests1_inference_unsampled_countydata1_all.json')

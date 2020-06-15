@@ -5,7 +5,7 @@ import os
 import datetime
 import json
 import pandas as pd
-from deepdiff import DeepDiff
+from recursive_diff import recursive_diff
 import pprint
 
 
@@ -96,12 +96,12 @@ def compare_csv(output, gold, index_col=None, check_exact=False, sort=True):
     return outputdf, golddf
 
 
-def compare_json(output_file, baseline_file, significant_digits=8):            # pragma: no cover
+def compare_json(output_file, baseline_file, abs_tol=1e-6):            # pragma: no cover
     with open(output_file,'r') as INPUT:
         output = json.load(INPUT)
     with open(baseline_file,'r') as INPUT:
         baseline = json.load(INPUT)
-    d = DeepDiff(baseline, output, significant_digits=significant_digits)
+    d = list(recursive_diff(baseline, output, abs_tol=abs_tol))
     if len(d) != 0:
         print('DIFFERENCES IN JSON')
         pprint.pprint(d)

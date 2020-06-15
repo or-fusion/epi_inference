@@ -148,10 +148,10 @@ def create_inference_window_formulation(*, recon, mobility, analysis_window, sel
 
     # least squares objective function
     def _lse(m, i):
-        return sum( (m.T_hat[i,w,t] - T_data[i][t])**2 for w,t in WINDOW_TIMES) #\
+        return sum( (m.T_hat[i,w,t] - T_data[i][t])**2 for w,t in WINDOW_TIMES)/len(WINDOW_TIMES) #\
     model.lse = pe.Expression(model.NODES, rule=_lse)
 
-    model.total_lse = pe.Objective(expr=sum(model.lse[i] for i in nodes))
+    model.total_lse = pe.Objective(expr=sum(model.lse[i] for i in nodes)/len(nodes))
     timing.toc('built objective')
 
     # get the approximate transmissions over the window period
