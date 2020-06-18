@@ -90,26 +90,31 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
         model.NODES = pe.Set(initialize=nodes, ordered=False)
         model.beta = pe.Var(model.NODES, initialize=1.0, bounds=(0,None)) 
 
-        # define the expression for estimated transmissions
-        def _infection_process(m, i, t):
-            return model.beta[i] * ((I1_data[i][t] + I2_data[i][t] + I3_data[i][t]) /populations[i] * S_data[i][t] * (1-eta*percent_mobile[i])) + sum(model.beta[j] * ((I1_data[j][t] + I2_data[j][t] + I3_data[j][t]) * S_data[i][t] * mobility[i][j] * eta / (populations[j]*populations[i])) for j in mobility[i] if j in nodes)
+        infections = 0
+        for t in WINDOW_TIMES[w]:
+            for i in nodes:
+                infections += I1_data[i][t] + I2_data[i][t] + I3_data[i][t]
+        if infections > 0:
+            # define the expression for estimated transmissions
+            def _infection_process(m, i, t):
+                return model.beta[i] * ((I1_data[i][t] + I2_data[i][t] + I3_data[i][t]) /populations[i] * S_data[i][t] * (1-eta*percent_mobile[i])) + sum(model.beta[j] * ((I1_data[j][t] + I2_data[j][t] + I3_data[j][t]) * S_data[i][t] * mobility[i][j] * eta / (populations[j]*populations[i])) for j in mobility[i] if j in nodes)
+    
+            model.T_hat = pe.Expression(model.NODES, WINDOW_TIMES[w], rule=_infection_process)
+            timing.toc('built infection process')
+    
+            model.total_lse = pe.Objective(expr=sum((model.T_hat[i,t] - T_data[i][t])**2 for i,t in model.T_hat)/len(model.T_hat))
+            timing.toc('built objective')
 
-        model.T_hat = pe.Expression(model.NODES, WINDOW_TIMES[w], rule=_infection_process)
-        timing.toc('built infection process')
+            # call the solver
+            timing.tic('Starting timer for solver')
+            solver = SolverFactory('ipopt')
+            solver.options['tol']=1e-8
+            status = solver.solve(model, options={'print_level':0})
+            timing.toc('Finished solver')
 
-        model.total_lse = pe.Objective(expr=sum((model.T_hat[i,t] - T_data[i][t])**2 for i,t in model.T_hat)/len(model.T_hat))
-        timing.toc('built objective')
-
-        # call the solver
-        timing.tic('Starting timer for solver')
-        solver = SolverFactory('ipopt')
-        solver.options['tol']=1e-8
-        status = solver.solve(model)
-        timing.toc('Finished solver')
-
-        # Check that the solve completed successfully
-        if check_optimal_termination(status) == False:
-            return {'beta': None, 'status': 'failed', 'msg': 'Unknown solver error for window %s and time %s.' % (str(w),str(t))}
+            # Check that the solve completed successfully
+            if check_optimal_termination(status) == False:
+                return {'beta': None, 'status': 'failed', 'msg': 'Unknown solver error for window %s and time %s.' % (str(w),str(t))}
 
         # Grab the results from the solver
         for i in recon:
