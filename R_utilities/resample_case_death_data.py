@@ -51,20 +51,28 @@ def sample_county_negbin(countyfile):
 
     # If the county has no cases, keep them all at zero
     if dat.Confirmed.iloc[-1] == 0:
-        samples_negbin = pd.DataFrame(np.zeros((len(idx_range), n_samples)))
+        samples_cases = pd.DataFrame(np.zeros((len(idx_range), n_samples)))
     else:
+        # Set up data for sampling case counts
         initial = dat.Confirmed[0]
         daily_increases = np.array(dat.Confirmed[1:dat.shape[0]] - dat.Confirmed[0:(dat.shape[0] - 1)].values)
         daily = np.concatenate(([initial], daily_increases))
-        samples_negbin = pd.DataFrame(columns=['s' + str(i) for i in range(1, 101)])
+        samples_cases = pd.DataFrame(columns=['s' + str(i) for i in range(1, 101)])
+        # Set up data for sampling death counts
+        initial = dat.Deaths[0]
+        daily_increases_death = np.array(dat.Deaths[1:dat.shape[0]] - dat.Deaths[0:(dat.shape[0] - 1)].values)
+        daily_deaths = np.concatenate(([initial], daily_increases_death))
+        samples_deaths = pd.DataFrame(columns=['s' + str(i) for i in range(1, 101)])
         r = 0
     for i in range((window + 1), dat.shape[0]):
         if i > dat.shape[0] - window:
             window_data = daily[(len(daily) - (2 * window + 1)): len(daily)]
+            window_data_deaths = daily_deaths[(len(daily_deaths) - (2 * window + 1)): len(daily_deaths)]
         else:
             # Using a symmetric window (window size is number of days on either side of date of interest)
             window_data = daily[(i - window):(i + window)]
-        if (all(window_data == 0)):
+            window_data_deaths = daily_deaths[(i - window):(i + window)]
+        if all(window_data == 0):
             # Need to force the negative binomial parameters to get a fit in some cases
             params = [0,1]
         else:
@@ -73,18 +81,42 @@ def sample_county_negbin(countyfile):
             else:
                 low = 1
             params = r_fit_negbin(window_data, low)
-        samples_negbin.loc[r] = MASS.rnegbin(n_samples, params[0], params[1])
+        samples_cases.loc[r] = MASS.rnegbin(n_samples, params[0], params[1])
+
+        # Now sample deaths as well:
+        if dat.Deaths.iloc[-1] == 0:
+            samples_deaths.loc[r] = np.zeros(n_samples)
+        else:
+            if all(window_data_deaths == 0):
+                params = [0,1]
+            else:
+                if min(window_data_deaths) < 2:
+                    low = 0.1
+                else:
+                    low = 1
+                params = r_fit_negbin(window_data_deaths, low)
+            samples_deaths.loc[r] = MASS.rnegbin(n_samples, params[0], params[1])
         r += 1
 
     # Reformat: add date and FIPS column, and make a cumulative sum instead of daily counts
-    samples_cases = samples_negbin.cumsum()
+    samples_cases = samples_cases.cumsum()
+    samples_deaths = samples_deaths.cumsum()
     Date = pd.DataFrame(dat.Date[(window + 1):dat.shape[0]]).reset_index()
     FIPS = pd.DataFrame(dat.FIPS[(window + 1):dat.shape[0]]).reset_index()
     samples_cases['Date'] = Date.Date
     samples_cases['FIPS'] = FIPS.FIPS
-    return samples_cases
+    samples_deaths['Date'] = Date.Date
+    samples_deaths['FIPS'] = FIPS.FIPS
+    return samples_cases, samples_deaths
 
 
-for i in county_files:
-    resample = sample_county_negbin(i)
-    # This returns a dataframe - what do we want to do with it?
+cases, deaths = sample_county_negbin(county_files[2040])
+print(cases.shape)
+print(cases.tail())
+print('-------')
+print(deaths.shape)
+print(deaths.tail())
+
+# for i in county_files:
+#     sampled_cases, sampled_deaths = sample_county_negbin(i)
+    # This returns two dataframes - what do we want to do with them?
