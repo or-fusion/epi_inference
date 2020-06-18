@@ -110,13 +110,7 @@ def sample_county_negbin(countyfile):
     return samples_cases, samples_deaths
 
 
-cases, deaths = sample_county_negbin(county_files[2040])
-print(cases.shape)
-print(cases.tail())
-print('-------')
-print(deaths.shape)
-print(deaths.tail())
 
-# for i in county_files:
-#     sampled_cases, sampled_deaths = sample_county_negbin(i)
-    # This returns two dataframes - what do we want to do with them?
+for i in county_files:
+    sampled_cases, sampled_deaths = sample_county_negbin(i)
+    This returns two dataframes - what do we want to do with them?
