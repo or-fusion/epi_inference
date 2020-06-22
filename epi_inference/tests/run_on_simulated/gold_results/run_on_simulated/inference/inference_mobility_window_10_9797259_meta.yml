@@ -1,0 +1,18 @@
+configuration:
+  analysis_window: !!python/object/new:pyutilib.misc.misc.Options
+    dictitems:
+      days: 14
+    state:
+      _name_: Options
+      days: 14
+  factor_levels:
+    reporting_factor: '10'
+    seed: '9797259'
+  factors: null
+  mobility_json: ./simulated_data/mobility.json
+  output_json: ./results/run_on_simulated//inference/inference_mobility_window_10_9797259.json
+  reconstruction_json: ./results/run_on_simulated//recon/recon_stochastic_10_9797259.json
+  verbose: true
+  version: pyomo_iterative
+  workflow: estimate_beta_windows_with_mobility
+timestamp: '2020-06-21 22:52:48.907905'
