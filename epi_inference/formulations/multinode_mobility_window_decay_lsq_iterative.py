@@ -90,11 +90,14 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
         model.NODES = pe.Set(initialize=nodes, ordered=False)
         model.beta = pe.Var(model.NODES, initialize=1.0, bounds=(0,None)) 
 
-        infections = 0
+        # check the total number of infections - if there are none across
+        # all counties, the optimization will not run
+        total_infections = 0
         for t in WINDOW_TIMES[w]:
             for i in nodes:
-                infections += I1_data[i][t] + I2_data[i][t] + I3_data[i][t]
-        if infections > 0:
+                total_infections += I1_data[i][t] + I2_data[i][t] + I3_data[i][t]
+
+        if total_infections > 0:
             # define the expression for estimated transmissions
             def _infection_process(m, i, t):
                 return model.beta[i] * ((I1_data[i][t] + I2_data[i][t] + I3_data[i][t]) /populations[i] * S_data[i][t] * (1-eta*percent_mobile[i])) + sum(model.beta[j] * ((I1_data[j][t] + I2_data[j][t] + I3_data[j][t]) * S_data[i][t] * mobility[i][j] * eta / (populations[j]*populations[i])) for j in mobility[i] if j in nodes)
@@ -122,7 +125,8 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
                 continue
             county = results[i]
 
-            if model.beta[i].stale == True:
+            if total_infections <= 0 or model.beta[i].stale == True:
+                # did not have sufficient data to determine a value for beta
                 county['beta'].append( None )
                 county['status'].append( 'stale' )
             else:
