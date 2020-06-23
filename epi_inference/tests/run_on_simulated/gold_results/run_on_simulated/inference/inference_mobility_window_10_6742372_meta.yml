@@ -15,4 +15,4 @@ configuration:
   verbose: true
   version: pyomo_iterative
   workflow: estimate_beta_windows_with_mobility
-timestamp: '2020-06-21 22:52:48.723448'
+timestamp: '2020-06-23 00:05:47.781396'
