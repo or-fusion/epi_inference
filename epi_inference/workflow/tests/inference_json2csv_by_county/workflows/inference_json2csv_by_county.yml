@@ -1,0 +1,32 @@
+#
+# Configuration parameters
+#
+---
+data_dir:       "./data"
+data_name:      "inference_json2csv_by_county"
+
+#config_dir:     "./config"
+#counties_file:  "${config_dir}/counties.yml"
+
+results_dir:    "./results/${data_name}/"
+num_processes:  4
+
+#
+# Workflow blocks
+#
+---
+#
+# Parallel multi-block workflows
+# 
+all:
+-   workflow: execute_blocks
+    blocks:
+    -   inference_json2csv_by_county
+
+inference_json2csv_by_county:
+-   workflow: inference_json2csv_by_county
+    factors:
+        reporting_factor: [10]
+    input_json: '${data_dir}/inference_mobility_window_${reporting_factor}_*.json'
+    output_dir: '${results_dir}'
+    low_infection_threshold: 100
