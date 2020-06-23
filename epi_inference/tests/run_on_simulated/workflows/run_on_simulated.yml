@@ -63,7 +63,7 @@ reconstruct_stochastic_confirmed:
 -   workflow: reconstruction_stochastic
     factors:
         reporting_factor: [10]
-        seed: !LoadYAMLFile "${config_dir}/seeds_10.yml"
+        seed: !LoadYAMLFile "${config_dir}/seeds_50.yml"
     reporting_delay_mean: 8
     reporting_delay_dev: 1.35
     fixed_incubation: 5.2
@@ -101,7 +101,7 @@ csv_inference_all_confirmed:
     factors:
         reporting_factor: [10]
         data: ['Confirmed']
-        seed: !LoadYAMLFile "${config_dir}/seeds_10.yml"
+        seed: !LoadYAMLFile "${config_dir}/seeds_50.yml"
     input_json: '${results_dir}/inference/inference_mobility_window_${reporting_factor}_${seed}.json'
     output_csv: '${results_dir}/inference/inference_mobility_window_${reporting_factor}_${seed}.csv'
 
@@ -134,7 +134,7 @@ inference_stochastic_confirmed:
 -   workflow: 'estimate_beta_windows_with_mobility'
     factors:
         reporting_factor: [10]
-        seed: !LoadYAMLFile "${config_dir}/seeds_10.yml"
+        seed: !LoadYAMLFile "${config_dir}/seeds_50.yml"
     analysis_window:
         days: 14
     version: pyomo_iterative
