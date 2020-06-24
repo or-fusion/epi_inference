@@ -106,6 +106,7 @@ def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_thre
         print('County:', c)
         summary_str = county_df.describe(include='all')
         fd.write(summary_str.to_string())
+        fd.write('\n')
 
         fname = os.path.join(output_dir, 'estimated_beta_county_{}.csv'.format(c))
         county_df.to_csv(fname, quoting=csv.QUOTE_NONNUMERIC, index=False)
