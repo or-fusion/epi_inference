@@ -6,11 +6,12 @@ import json
 import os.path
 
 try:
-    from bokeh.io import output_notebook, show, output_file
+    from bokeh.io import output_notebook, save, show, output_file
     from bokeh.plotting import figure
     from bokeh.models import GeoJSONDataSource, LinearColorMapper, ColorBar, RangeSlider, PreText, CustomJS
     from bokeh.layouts import gridplot
     from bokeh.palettes import brewer
+    from bokeh.resources import CDN
     bokeh_available=True
 except:
     bokeh_available=False
@@ -23,9 +24,13 @@ NON_CONTINENTAL = set(['02','15','60','66','69','72','78'])
 def get_values(gdf, results_json, date, value):
     if date is None:
         index=-1
+        for fips in results_json:
+            datestring = results_json[fips]['date'][index]
+            break
     else:
         for fips in results_json:
             index = results_json[fips]['date'].index(date)
+            datestring = results_json[fips]['date'][index]
             break
     all_values = set()
     vals = []
@@ -44,10 +49,10 @@ def get_values(gdf, results_json, date, value):
             vals.append(None)
     if len(all_values) == 0:
         return None, [0]
-    return vals, status, all_values
+    return vals, status, all_values, datestring
 
 
-def create_us_choropleth(*, results_json, value_key, date=None, shapefile=os.path.join(currdir, 'data/cb_2019_us_county_5m.shp'), states=None, description="Unknown Bokeh Choropleth", value_name="Value", max_value=None, crange=None, cvalue=None):
+def create_us_choropleth(*, results_json, value_key, date=None, shapefile=os.path.join(currdir, 'data/cb_2019_us_county_5m.shp'), states=None, description="Unknown Bokeh Choropleth", value_name="Value", max_value=None, crange=None, cvalue=None, output_html=None, show_browser=False):
     if not bokeh_available:
         raise RuntimeError("Need to install bokeh package to generate choropleth visualization")
     #
@@ -68,7 +73,7 @@ def create_us_choropleth(*, results_json, value_key, date=None, shapefile=os.pat
     #
     gdf = gdf[['GEOID', 'NAME', 'geometry']]
     gdf.columns = ['fips', 'county_name', 'geometry']
-    val_list, status_list, all_values = get_values(gdf, results_json, date, value_key)
+    val_list, status_list, all_values, datestring = get_values(gdf, results_json, date, value_key)
     gdf.insert(1, "solver_status", status_list)
     gdf.insert(1, "plot_value", val_list)
     #
@@ -117,7 +122,7 @@ def create_us_choropleth(*, results_json, value_key, date=None, shapefile=os.pat
                         location = (-10,0), 
                         orientation='horizontal')
 
-    p = figure(title = description,
+    p = figure(title = description+" - "+datestring,
                 match_aspect=True,
                 plot_width=1200,
                 x_axis_location=None,
@@ -156,7 +161,11 @@ color_mapper.low = minval;
     # final plot layout
     final = gridplot([[p],[range_slider],[text]], toolbar_location="left")
 
-    show(final)
+    print("Creating file: "+output_html)
+    output_file(output_html, mode='inline', title="US Choropleth Plot")
+    save(final)
+    if show_browser:
+        show(final)
 
 
 if __name__ == "__main__":
