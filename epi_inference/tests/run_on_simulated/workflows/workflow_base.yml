@@ -1,0 +1,136 @@
+#
+# Parallel multi-block workflows
+# 
+all:
+-   workflow: execute_blocks
+    blocks:
+    -   reconstruct
+    -   inference
+
+reconstruct:
+-   workflow: execute_blocks
+    num_processes: ${num_processes}
+    blocks:
+    -   reconstruct_deterministic_unsampled_confirmed
+    -   reconstruct_stochastic_confirmed
+    -   csv_reconstruct_all_confirmed
+    -   summary_all_confirmed
+
+inference:
+-   workflow: execute_blocks
+    num_processes: ${num_processes}
+    blocks:
+    -   inference_deterministic_unsampled_confirmed
+    -   inference_stochastic_confirmed
+    -   csv_inference_all_confirmed
+    -   inference_json2csv_by_county
+
+#
+# Reconstruct workflows
+#
+reconstruct_deterministic_unsampled_confirmed:
+-   workflow: reconstruction_deterministic_delay
+    factors:
+        reporting_factor: [10]
+    sigma: 0.1923076923 # 1/5.2
+    gamma: 0.2325581395 # 1/4.3
+    deltaP: 8
+    reporting_factor: ${reporting_factor}
+    input_csv: "${input_data_csv}"
+    population_csv:
+        file: '${data_dir}/geodata.csv'
+        population: 'pop2010'
+        index: 'geoid'
+    output_json: '${results_dir}/reconstruct_deterministic_unsampled_confirmed/recon_deterministic_delay_${reporting_factor}.json'
+
+reconstruct_stochastic_confirmed:
+-   workflow: reconstruction_stochastic
+    factors:
+        reporting_factor: [10]
+        seed: !LoadYAMLFile "${config_dir}/seeds_50.yml"
+    reporting_delay_mean: 8
+    reporting_delay_dev: 1.35
+    fixed_incubation: 5.2
+    infectious_lower: 2.6
+    infectious_upper: 6
+    n_steps_per_day: 4
+    seed: ${seed}
+    reporting_multiplier: ${reporting_factor}
+    input_csv: "${input_data_csv}"
+    population_csv:
+        file: '${data_dir}/geodata.csv'
+        population: 'pop2010'
+        index: 'geoid'
+    output_json: '${results_dir}/reconstruct_stochastic_confirmed/recon_stochastic_${reporting_factor}_${seed}.json'
+
+#
+# Inference workflows
+#
+inference_deterministic_unsampled_confirmed:
+-   workflow: 'estimate_beta_windows_with_mobility'
+    factors:
+        reporting_factor: [10]
+    analysis_window:
+        days: 14
+    version: pyomo_iterative
+    reconstruction_json: '${results_dir}/reconstruct_deterministic_unsampled_confirmed/recon_deterministic_delay_${reporting_factor}.json'
+    mobility_json: '${data_dir}/mobility.json'
+    output_json: '${results_dir}/inference_deterministic_unsampled_confirmed/inference_mobility_window_unsampled_${reporting_factor}.json'
+
+inference_stochastic_confirmed:
+-   workflow: 'estimate_beta_windows_with_mobility'
+    factors:
+        reporting_factor: [10]
+        seed: !LoadYAMLFile "${config_dir}/seeds_50.yml"
+    analysis_window:
+        days: 14
+    version: pyomo_iterative
+    reconstruction_json: '${results_dir}/reconstruct_stochastic_confirmed/recon_stochastic_${reporting_factor}_${seed}.json'
+    mobility_json: '${data_dir}/mobility.json'
+    output_json: '${results_dir}/inference_stochastic_confirmed/inference_mobility_window_${reporting_factor}_${seed}.json'
+
+#
+# CSV workflows
+#
+csv_reconstruct_all_confirmed:
+-   workflow: recon_json2csv
+    factors:
+        reporting_factor: [10]
+    format: flatten
+    input_json: '${results_dir}/reconstruct_deterministic_unsampled_confirmed/recon_deterministic_delay_${reporting_factor}.json'
+
+-   workflow: recon_many_json2csv
+    factors:
+        reporting_factor: [10]
+    input_json: '${results_dir}/reconstruct_stochastic_confirmed/recon_stochastic_${reporting_factor}_*.json'
+    format: flatten
+    output_csv: '${results_dir}/reconstruct_stochastic_confirmed/recon_stochastic_${reporting_factor}.csv'
+
+csv_inference_all_confirmed:
+-   workflow: inference_json2csv
+    factors:
+        reporting_factor: [10]
+        data: ['Confirmed']
+        seed: !LoadYAMLFile "${config_dir}/seeds_50.yml"
+    input_json: '${results_dir}/inference_stochastic_confirmed/inference_mobility_window_${reporting_factor}_${seed}.json'
+    output_csv: '${results_dir}/inference_stochastic_confirmed/inference_mobility_window_${reporting_factor}_${seed}.csv'
+
+inference_json2csv_by_county:
+-   workflow: inference_json2csv_by_county
+    factors:
+        reporting_factor: [10]
+    input_json: '${results_dir}/inference_stochastic_confirmed/inference_mobility_window_*.json'
+    output_dir: '${results_dir}/inference_stochastic_confirmed_by_county'
+    low_infection_threshold: 100
+
+#
+# Summary workflows
+#
+summary_all_confirmed:
+-   workflow: recon_summary
+    factors:
+        reporting_factor: [10]
+    scenario_index: seed
+    input_json: '${results_dir}/reconstruct_stochastic_confirmed/recon_stochastic_${reporting_factor}_*.json'
+    output_csv: '${results_dir}/reconstruct_stochastic_confirmed/recon_stochastic_summary_${reporting_factor}.csv'
+

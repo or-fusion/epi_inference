@@ -25,4 +25,4 @@ configuration:
   seed: 3778717
   verbose: true
   workflow: reconstruction_stochastic
-timestamp: '2020-06-29 10:39:43.084125'
+timestamp: '2020-06-29 15:31:01.504578'

@@ -12,6 +12,8 @@ from pyutilib.misc import Options as Options
 from epi_inference.engine import driver
 from epi_inference.util import compare_json, compare_csv
 
+skip_new_files = False
+
 class TestRunOnSimulated():
     @classmethod
     def setup_class(cls):
@@ -33,12 +35,12 @@ class TestRunOnSimulated():
         args.verbose = True
 
         # remove old results files used in comparison
-        res_files = _walk_files('results', '.json')
+        res_files = _walk_files('results/run_on_simulated', '.json')
         for f in res_files:
-            os.remove(os.path.join('results', f))
-        res_files = _walk_files('results', '.csv')
+            os.remove(os.path.join('results/run_on_simulated', f))
+        res_files = _walk_files('results/run_on_simulated', '.csv')
         for f in res_files:
-            os.remove(os.path.join('results', f))
+            os.remove(os.path.join('results/run_on_simulated', f))
 
         driver.run(args)
 
@@ -163,29 +165,85 @@ class TestRunOnSimulated():
         #
         # compare all the json files (gold standard)
         #
-        res_json_files = _walk_files('results', '.json')
-        baseline_json_files = set(_walk_files('baseline', '.json'))
+        res_json_files = _walk_files('results/run_on_simulated', '.json')
+        baseline_json_files = set(_walk_files('baseline/run_on_simulated', '.json'))
         for f in res_json_files:
-            assert f in baseline_json_files # if this fails then there are files in the new results that are not in the baseline
-            baseline_json_files.remove(f)
+            if not skip_new_files:
+                assert f in baseline_json_files # if this fails then there are files in the new results that are not in the baseline
 
-            res_file = os.path.join('results', f)
-            baseline_file = os.path.join('baseline', f)
-            compare_json(res_file, baseline_file, abs_tol=1e-6)
+            if f in baseline_json_files:
+                baseline_json_files.remove(f)
+                res_file = os.path.join('results/run_on_simulated', f)
+                baseline_file = os.path.join('baseline/run_on_simulated', f)
+                compare_json(res_file, baseline_file, abs_tol=1e-6)
+
         assert len(baseline_json_files) == 0 # if this fails, then there are files in the baseline that did not appear in the new results
 
         #
         # compare all the csv files (gold standard)
         #
-        res_csv_files = _walk_files('results', '.csv')
-        baseline_csv_files = set(_walk_files('baseline', '.csv'))
+        res_csv_files = _walk_files('results/run_on_simulated', '.csv')
+        baseline_csv_files = set(_walk_files('baseline/run_on_simulated', '.csv'))
         for f in res_csv_files:
-            assert f in baseline_csv_files # if this fails then there are files in the new results that are not in the baseline
-            baseline_csv_files.remove(f)
+            if not skip_new_files:
+                assert f in baseline_csv_files # if this fails then there are files in the new results that are not in the baseline
+            if f in baseline_csv_files:
+                baseline_csv_files.remove(f)
+                res_file = os.path.join('results/run_on_simulated', f)
+                baseline_file = os.path.join('baseline/run_on_simulated', f)
+                compare_csv(res_file, baseline_file, check_exact=False)
+                
+        assert len(baseline_csv_files) == 0 # if this fails, then there are files in the baseline that did not appear in the new results
 
-            res_file = os.path.join('results', f)
-            baseline_file = os.path.join('baseline', f)
-            compare_csv(res_file, baseline_file, check_exact=False)
+
+    @pytest.mark.skip('skipped - not testing anything that run_on_simulated does not')
+    def test_run_on_simulated_half(self):
+        args = Options()
+        args.block = 'all'
+        args.config_file = './workflows/run_on_simulated_half.yml'
+        args.verbose = True
+
+        # remove old results files used in comparison
+        res_files = _walk_files('results/run_on_simulated_half', '.json')
+        for f in res_files:
+            os.remove(os.path.join('results/run_on_simulated_half', f))
+        res_files = _walk_files('results/run_on_simulated_half', '.csv')
+        for f in res_files:
+            os.remove(os.path.join('results/run_on_simulated_half', f))
+
+        driver.run(args)
+
+        #
+        # compare all the json files (gold standard)
+        #
+        res_json_files = _walk_files('results/run_on_simulated_half', '.json')
+        baseline_json_files = set(_walk_files('baseline/run_on_simulated_half', '.json'))
+        for f in res_json_files:
+            if not skip_new_files:
+                assert f in baseline_json_files # if this fails then there are files in the new results that are not in the baseline
+
+            if f in baseline_json_files:
+                baseline_json_files.remove(f)
+                res_file = os.path.join('results/run_on_simulated_half', f)
+                baseline_file = os.path.join('baseline/run_on_simulated_half', f)
+                compare_json(res_file, baseline_file, abs_tol=1e-6)
+
+        assert len(baseline_json_files) == 0 # if this fails, then there are files in the baseline that did not appear in the new results
+
+        #
+        # compare all the csv files (gold standard)
+        #
+        res_csv_files = _walk_files('results/run_on_simulated_half', '.csv')
+        baseline_csv_files = set(_walk_files('baseline/run_on_simulated_half', '.csv'))
+        for f in res_csv_files:
+            if not skip_new_files:
+                assert f in baseline_csv_files # if this fails then there are files in the new results that are not in the baseline
+            if f in baseline_csv_files:
+                baseline_csv_files.remove(f)
+                res_file = os.path.join('results/run_on_simulated_half', f)
+                baseline_file = os.path.join('baseline/run_on_simulated_half', f)
+                compare_csv(res_file, baseline_file, check_exact=False)
+                
         assert len(baseline_csv_files) == 0 # if this fails, then there are files in the baseline that did not appear in the new results
 
 def _walk_files(basepath, extension):
