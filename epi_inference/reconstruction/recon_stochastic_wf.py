@@ -53,7 +53,7 @@ def run_county(county, df, population, CONFIG, warnings):
     results['I3'] = res.I3
     results['R'] = res.R
     results['population'] = population
-
+    results['orig_rep_cases'] = res.orig_rep_cases
     return results
 
 
