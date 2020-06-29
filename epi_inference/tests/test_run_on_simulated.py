@@ -52,7 +52,7 @@ class TestRunOnSimulated():
         # read all the json files and compute statistics across the seeds
         recon = dict()
         for sd in seeds:
-            with open('./results/run_on_simulated/recon/recon_stochastic_10_{}.json'.format(str(sd)),'r') as fd:
+            with open('./results/run_on_simulated/reconstruct_stochastic_confirmed/recon_stochastic_10_{}.json'.format(str(sd)),'r') as fd:
                 recon[sd] = json.load(fd)
 
         counties = list(recon[seeds[0]].keys())
@@ -88,13 +88,13 @@ class TestRunOnSimulated():
                         total_count += 1
                         if (v < ql or v > qu):
                             outside_count += 1
-                            print('Outside confidence:', cname, sname, dt, v, ':', ql, mn, qu)
+                            # print('Outside confidence:', cname, sname, dt, v, ':', ql, mn, qu)
                         if abs(v-mn) > 10 and abs(v-mn)/max(1,v) > 0.2:
                             mean_error_count += 1
-                            print('Error with mean > 20%:', cname, sname, dt, v, ':', ql, mn, qu)
+                            # print('Error with mean > 20%:', cname, sname, dt, v, ':', ql, mn, qu)
 
-        print('Fraction outside 95%:', outside_count/total_count)
-        print('Fraction with error in mean > 20%:', mean_error_count/total_count)
+        print('Reconstruction fraction outside 95%:', outside_count/total_count)
+        print('Reconstruction fraction with error in mean > 20%:', mean_error_count/total_count)
         assert outside_count / total_count < 0.05
         assert mean_error_count / total_count < 0.05
 
@@ -106,7 +106,7 @@ class TestRunOnSimulated():
         # read all the json files and compute statistics across the seeds
         inference = dict()
         for sd in seeds:
-            with open('./results/run_on_simulated/inference/inference_mobility_window_10_{}.json'.format(str(sd)),'r') as fd:
+            with open('./results/run_on_simulated/inference_stochastic_confirmed/inference_mobility_window_10_{}.json'.format(str(sd)),'r') as fd:
                 inference[sd] = json.load(fd)
 
         counties = list(inference[seeds[0]].keys())
@@ -141,10 +141,10 @@ class TestRunOnSimulated():
                     total_count += 1
                     if (v < ql or v > qu):
                         outside_count += 1
-                        print('Beta outside confidence:', cname, 'beta', dt, v, ':', ql, mn, qu, '# Not None:', len(data) )
+                        # print('Beta outside confidence:', cname, 'beta', dt, v, ':', ql, mn, qu, '# Not None:', len(data) )
                     if abs(v-mn)/max(1,v) > 0.2:
                         mean_error_count += 1
-                        print('Beta error with mean > 20%:', cname, 'beta', dt, v, ':', ql, mn, qu, '# Not None:', len(data))
+                        # print('Beta error with mean > 20%:', cname, 'beta', dt, v, ':', ql, mn, qu, '# Not None:', len(data))
 
         print('Inference fraction outside 95%:', outside_count/total_count)
         print('Inference fraction with error in mean > 20%:', mean_error_count/total_count)
@@ -154,28 +154,39 @@ class TestRunOnSimulated():
         #
         # compare all the json files (gold standard)
         #
-        for f in results_json_files(seeds):
-            output_file = os.path.join('results', f)
-            baseline_file = os.path.join('gold_results', f) 
-            compare_json(output_file, baseline_file, abs_tol=1e-6)
+        res_json_files = _walk_files('results', '.json')
+        baseline_json_files = set(_walk_files('baseline', '.json'))
+        for f in res_json_files:
+            assert f in baseline_json_files # if this fails then there are files in the new results that are not in the baseline
+            baseline_json_files.remove(f)
+
+            res_file = os.path.join('results', f)
+            baseline_file = os.path.join('baseline', f)
+            compare_json(res_file, baseline_file, abs_tol=1e-6)
+        assert len(baseline_json_files) == 0 # if this fails, then there are files in the baseline that did not appear in the new results
 
         #
         # compare all the csv files (gold standard)
         #
-        for f in results_csv_files(seeds):
-            output_file = os.path.join('results', f)
-            baseline_file = os.path.join('gold_results', f) 
-            compare_csv(output_file, baseline_file)
+        res_csv_files = _walk_files('results', '.csv')
+        baseline_csv_files = set(_walk_files('baseline', '.csv'))
+        for f in res_csv_files:
+            assert f in baseline_csv_files # if this fails then there are files in the new results that are not in the baseline
+            baseline_csv_files.remove(f)
 
-def results_json_files(seeds):
-    ret = ['run_on_simulated/recon/recon_deterministic_delay_10.json', 'run_on_simulated/inference/inference_mobility_window_unsampled_10.json']
-    ret.extend(['run_on_simulated/recon/recon_stochastic_10_{}.json'.format(sd) for sd in seeds])
-    ret.extend(['run_on_simulated/inference/inference_mobility_window_10_{}.json'.format(sd) for sd in seeds])
-    return ret
+            res_file = os.path.join('results', f)
+            baseline_file = os.path.join('baseline', f)
+            compare_csv(res_file, baseline_file, check_exact=False)
+        assert len(baseline_csv_files) == 0 # if this fails, then there are files in the baseline that did not appear in the new results
 
-def results_csv_files(seeds):
-    ret = ['run_on_simulated/recon/recon_stochastic_summary_10.csv',
-           'run_on_simulated/recon/recon_deterministic_delay_10.csv',
-           'run_on_simulated/recon/recon_stochastic_10.csv']
-    ret.extend(['run_on_simulated/inference/inference_mobility_window_10_{}.csv'.format(sd) for sd in seeds])
-    return ret
+def _walk_files(basepath, extension):
+    # get all the files of a particular extension in the directory tree
+    ret_files = list()
+
+    for path, folders, files in os.walk(basepath):
+        for f in files:
+            fname, fext = os.path.splitext(f)
+            if fext == extension:
+                relfname = os.path.relpath(os.path.join(path,f), basepath)
+                ret_files.append(relfname)
+    return ret_files

@@ -1,0 +1,28 @@
+configuration:
+  factor_levels:
+    reporting_factor: '10'
+    seed: '6922939'
+  factors: null
+  fixed_incubation: 5.2
+  infectious_lower: 2.6
+  infectious_upper: 6
+  input_csv: ./simulated_data/cumulative_reported_cases_R0_2.25_short_realization_4.csv
+  n_steps_per_day: 4
+  output_json: ./results/run_on_simulated//reconstruct_stochastic_confirmed/recon_stochastic_10_6922939.json
+  population_csv: !!python/object/new:pyutilib.misc.misc.Options
+    dictitems:
+      file: ./simulated_data/geodata.csv
+      index: geoid
+      population: pop2010
+    state:
+      _name_: Options
+      file: ./simulated_data/geodata.csv
+      index: geoid
+      population: pop2010
+  reporting_delay_dev: 1.35
+  reporting_delay_mean: 8
+  reporting_multiplier: 10
+  seed: 6922939
+  verbose: true
+  workflow: reconstruction_stochastic
+timestamp: '2020-06-29 10:39:39.629031'
