@@ -9,7 +9,7 @@ from pyutilib.misc import Options as Options
 from epi_inference.engine import driver
 from epi_inference.util import compare_csv, compare_json
 
-keepfiles = True
+keepfiles = False
 
 class TestReconstruct():
     @classmethod

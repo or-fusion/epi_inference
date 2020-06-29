@@ -82,12 +82,7 @@ def stochastic_reconstruction(*, dates, reported_cases_per_day, population, n_st
         if reported_cases_per_day[r_day] > 0:
             # draw the total number of reportable cases
             reportable_cases_day = int(reported_cases_per_day[r_day] + np.random.negative_binomial(reported_cases_per_day[r_day],p))
-#        else:
-#            # draw the total number of reportable cases
-#            reportable_cases_day = max(0,np.random.negative_binomial(1,p)-1)
-#            print('Zero reported cases on date {} ({}). Reportable cases = {}'.format(dates[r_day], r_day, reportable_cases_day))
-#
-#        if True:
+
             if reportable_cases_day > 0:
                 # now draw the delays from infection to confirmation (log normal)
                 # one delay is drawn for each reportable case and is in units of days
