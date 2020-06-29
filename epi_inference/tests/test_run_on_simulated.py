@@ -31,6 +31,15 @@ class TestRunOnSimulated():
         args.block = 'all'
         args.config_file = './workflows/run_on_simulated.yml'
         args.verbose = True
+
+        # remove old results files used in comparison
+        res_files = _walk_files('results', '.json')
+        for f in res_files:
+            os.remove(os.path.join('results', f))
+        res_files = _walk_files('results', '.csv')
+        for f in res_files:
+            os.remove(os.path.join('results', f))
+
         driver.run(args)
 
         #
