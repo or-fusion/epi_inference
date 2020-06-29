@@ -4,6 +4,7 @@
 ---
 data_dir:       "./simulated_data"
 data_name:      "run_on_simulated"
+input_data_csv: "${data_dir}/cumulative_reported_cases_R0_2.25_short_realization_4.csv"
 
 config_dir:     "./config"
 counties_file:  "${config_dir}/counties.yml"
@@ -52,7 +53,7 @@ reconstruct_deterministic_unsampled_confirmed:
     gamma: 0.2325581395 # 1/4.3
     deltaP: 8
     reporting_factor: ${reporting_factor}
-    input_csv: "${data_dir}/cumulative_reported_cases_R0_2.25_short_realization_4.csv"
+    input_csv: "${input_data_csv}"
     population_csv:
         file: '${data_dir}/geodata.csv'
         population: 'pop2010'
@@ -72,7 +73,7 @@ reconstruct_stochastic_confirmed:
     n_steps_per_day: 4
     seed: ${seed}
     reporting_multiplier: ${reporting_factor}
-    input_csv: "${data_dir}/cumulative_reported_cases_R0_2.25_short_realization_4.csv"
+    input_csv: "${input_data_csv}"
     population_csv:
         file: '${data_dir}/geodata.csv'
         population: 'pop2010'
