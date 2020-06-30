@@ -1,6 +1,5 @@
 import pytest
 import os
-import os.path
 import shutil
 
 from pyomo.common import fileutils as fileutils
