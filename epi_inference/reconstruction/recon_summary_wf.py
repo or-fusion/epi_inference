@@ -15,7 +15,7 @@ from ..engine.misc import save_metadata
 def summary_narrow(OUTPUT, input_json_files, scenario_index, counties):
     counties = set(counties)
     first = True
-    series = ['transmissions', 'S', 'E', 'I1', 'I2', 'I3', 'R']
+    series = ['transmissions', 'S', 'E', 'I1', 'I2', 'I3', 'R', 'orig_rep_cases']
     values = []
     data = {}
 

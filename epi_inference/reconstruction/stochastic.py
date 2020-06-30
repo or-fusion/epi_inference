@@ -68,7 +68,6 @@ def stochastic_reconstruction(*, dates, reported_cases_per_day, population, n_st
     assert n_steps_per_day >= 1
     padding_days = 50 # days - maybe this should be passed in?
     padding_timesteps = padding_days*n_steps_per_day
-    n_r_daily_dates = len(dates) # number of days of reported cases
     tcases_timestep = [0]*(n_r_days+padding_days)*n_steps_per_day
 
     # probability of confirmation of case - reporting fraction
@@ -83,6 +82,7 @@ def stochastic_reconstruction(*, dates, reported_cases_per_day, population, n_st
         if reported_cases_per_day[r_day] > 0:
             # draw the total number of reportable cases
             reportable_cases_day = int(reported_cases_per_day[r_day] + np.random.negative_binomial(reported_cases_per_day[r_day],p))
+
             if reportable_cases_day > 0:
                 # now draw the delays from infection to confirmation (log normal)
                 # one delay is drawn for each reportable case and is in units of days
@@ -107,6 +107,10 @@ def stochastic_reconstruction(*, dates, reported_cases_per_day, population, n_st
     int_delay = int(np.round(2*reporting_delay_mean))
     t_daily_dates = [dates[0] + timedelta(days=i) for i in range(-padding_days, n_r_days - int_delay)]
     tcases_timestep = tcases_timestep[: -int_delay * n_steps_per_day]
+
+    # capture the reported cases per day - add the padding and truncate the end
+    output_reported_cases = [0]*padding_days
+    output_reported_cases.extend(reported_cases_per_day[: -int_delay])
 
     # use these transmissions to generate a single stochastic reconstruction
     # of each of the compartments (SEIIIR)
@@ -190,7 +194,7 @@ def stochastic_reconstruction(*, dates, reported_cases_per_day, population, n_st
     #   of the initial transmission
     # - S,E,I1,I2,I3,R: numbers of individuals in each of the
     #   compartments on the dates in tdates
-    return Bunch(dates=t_daily_dates, S=S, E=E, I1=I1, I2=I2, I3=I3, R=R, transmissions=T)
+    return Bunch(dates=t_daily_dates, S=S, E=E, I1=I1, I2=I2, I3=I3, R=R, transmissions=T, orig_rep_cases=output_reported_cases)
 
 def np_stochastic_reconstruction(*, dates,
                                  reported_cases_per_day,

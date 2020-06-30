@@ -200,7 +200,16 @@ def reconstruct_states_deterministic_decay(*, dates, reported_cases_per_day, pop
         #R[t+1] = R[t] + gamma*3*I3[t]
         assert R[t+1] >= 0
 
-    return Bunch(dates=transmission_dates, S=S, E=E, I1=I1, I2=I2, I3=I3, R=R, transmissions=transmissions)
+
+    orig_rep_cases = list()
+    drdict = {d:r for d,r in zip(dates,reported_cases_per_day)}
+    for dt in transmission_dates:
+        if dt in drdict:
+            orig_rep_cases.append(drdict[dt])
+        else:
+            orig_rep_cases.append(0)
+
+    return Bunch(dates=transmission_dates, S=S, E=E, I1=I1, I2=I2, I3=I3, R=R, transmissions=transmissions, orig_rep_cases=orig_rep_cases)
 
 def np_reconstruct_states_deterministic_decay(*, dates, counties, reported_cases_per_day, populations, sigma, gamma, reporting_factor, report_delay):
     """

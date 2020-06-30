@@ -33,7 +33,7 @@ def write_wide(OUTPUT, raw, counties):
 def write_flattened(OUTPUT, input_json_files, counties):
     counties = set(counties)
     first = True
-    series = ['dates', 'transmissions', 'S', 'E', 'I1', 'I2', 'I3', 'R']
+    series = ['dates', 'transmissions', 'S', 'E', 'I1', 'I2', 'I3', 'R', 'orig_rep_cases']
     values = []
 
     for filename in glob.glob(input_json_files):
@@ -87,7 +87,7 @@ def write_flattened(OUTPUT, input_json_files, counties):
 def write_narrow(OUTPUT, input_json_files, counties):
     counties = set(counties)
     first = True
-    series = ['transmissions', 'S', 'E', 'I1', 'I2', 'I3', 'R']
+    series = ['transmissions', 'S', 'E', 'I1', 'I2', 'I3', 'R', 'orig_rep_cases']
     values = []
 
     for filename in glob.glob(input_json_files):

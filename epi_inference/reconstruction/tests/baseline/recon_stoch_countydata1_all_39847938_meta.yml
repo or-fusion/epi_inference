@@ -1,13 +1,23 @@
 configuration:
+  factor_levels:
+    seed: '39847938'
+    test_factor: factor_value
+  factors: null
   input_csv: ../../collect/tests/baseline/countydata1_FL.csv
   n_steps_per_day: 4
   output_json: output/recon_stoch_countydata1_all_39847938.json
-  population_csv:
-    file: ../../../examples/countydata/FL_county_population.csv
-    index: FIPS
-    population: pop_2019
+  population_csv: !!python/object/new:pyutilib.misc.misc.Options
+    dictitems:
+      file: ../../../examples/countydata/FL_county_population.csv
+      index: FIPS
+      population: pop_2019
+    state:
+      _name_: Options
+      file: ../../../examples/countydata/FL_county_population.csv
+      index: FIPS
+      population: pop_2019
   reporting_multiplier: 10
   seed: 39847938
   verbose: true
   workflow: reconstruction_stochastic
-timestamp: '2020-06-02 12:08:23.766878'
+timestamp: '2020-06-29 18:06:02.800869'
