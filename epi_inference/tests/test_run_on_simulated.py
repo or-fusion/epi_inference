@@ -177,6 +177,8 @@ class TestRunOnSimulated():
                 baseline_file = os.path.join('baseline/run_on_simulated', f)
                 compare_json(res_file, baseline_file, abs_tol=1e-6)
 
+        if len(baseline_json_files) != 0:
+            print(baseline_json_files)
         assert len(baseline_json_files) == 0 # if this fails, then there are files in the baseline that did not appear in the new results
 
         #
@@ -192,7 +194,9 @@ class TestRunOnSimulated():
                 res_file = os.path.join('results/run_on_simulated', f)
                 baseline_file = os.path.join('baseline/run_on_simulated', f)
                 compare_csv(res_file, baseline_file, check_exact=False)
-                
+
+        if len(baseline_csv_files) != 0:
+            print(baseline_csv_files)
         assert len(baseline_csv_files) == 0 # if this fails, then there are files in the baseline that did not appear in the new results
 
 
