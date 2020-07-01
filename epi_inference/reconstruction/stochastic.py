@@ -112,6 +112,16 @@ def stochastic_reconstruction(*, dates, reported_cases_per_day, population, n_st
     output_reported_cases = [0]*padding_days
     output_reported_cases.extend(reported_cases_per_day[: -int_delay])
 
+    return populate_compartments(tcases_timestep=tcases_timestep, population=population,
+                                fixed_incubation=fixed_incubation,
+                                infectious_lower=infectious_lower,
+                                infectious_upper=infectious_upper,
+                                n_steps_per_day=n_steps_per_day,
+                                t_daily_dates=t_daily_dates,
+                                output_reported_cases=output_reported_cases
+                                )
+
+def populate_compartments(*, tcases_timestep, population, fixed_incubation, infectious_lower, infectious_upper, n_steps_per_day, t_daily_dates, output_reported_cases):
     # use these transmissions to generate a single stochastic reconstruction
     # of each of the compartments (SEIIIR)
     S = np.zeros(len(tcases_timestep))

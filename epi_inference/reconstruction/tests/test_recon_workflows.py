@@ -61,6 +61,27 @@ class TestReconstruct():
             os.remove('./output/recon_stoch_countydata1_12011.json')
             os.remove('./output/recon_stoch_countydata1_12011_meta.yml')
 
+    def test_reconstruct_resampled(self):
+        args = Options()
+        args.block = 'resampled'
+        args.config_file = './config_files/reconstruct_case.yml'
+        args.verbose = True
+        driver.run(args)
+    
+        # check that the json files load into dataframes that have the correct numbers and shapes
+        outputdf, golddf = compare_json('./output/recon_resampled_countydata1_all_38479387.json', './baseline/recon_resampled_countydata1_all_38479387.json')
+        outputdf, golddf = compare_json('./output/recon_resampled_countydata1_all_39847938.json', './baseline/recon_resampled_countydata1_all_39847938.json')
+        outputdf, golddf = compare_json('./output/recon_resampled_countydata1_12011.json', './baseline/recon_resampled_countydata1_12011.json')
+    
+        # cleanup the files we created
+        if not keepfiles:
+            os.remove('./output/recon_resampled_countydata1_all_38479387.json')
+            os.remove('./output/recon_resampled_countydata1_all_38479387_meta.yml')
+            os.remove('./output/recon_resampled_countydata1_all_39847938.json')
+            os.remove('./output/recon_resampled_countydata1_all_39847938_meta.yml')
+            os.remove('./output/recon_resampled_countydata1_12011.json')
+            os.remove('./output/recon_resampled_countydata1_12011_meta.yml')
+
     def test_recon_json2csv(self):
         args = Options()
         args.block = 'json2csv'

@@ -49,6 +49,32 @@ stochastic:
         index: 'FIPS'
     output_json: "output/recon_stoch_countydata1_12011.json"
 
+resampled:
+-   workflow: reconstruction_resampled
+    factors:
+        test_factor: ["factor_value"]
+        seed: [39847938, 38479387]
+    seed: ${seed}
+    reporting_multiplier: 10
+    n_steps_per_day: 4
+    input_csv: "../../collect/tests/baseline/countydata1_FL.csv"
+    population_csv:
+        file: "../../../examples/countydata/FL_county_population.csv"
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: "output/recon_resampled_countydata1_all_${seed}.json"
+-   workflow: reconstruction_resampled
+    seed: 39847938
+    county: "12011"
+    reporting_multiplier: 10
+    n_steps_per_day: 4
+    input_csv: "../../collect/tests/baseline/countydata1_FL.csv"
+    population_csv:
+        file: "../../../examples/countydata/FL_county_population.csv"
+        population: 'pop_2019'
+        index: 'FIPS'
+    output_json: "output/recon_resampled_countydata1_12011.json"
+
 json2csv:
 -   workflow: recon_json2csv
     input_json: 'baseline/recon_stoch_countydata1_all_38479387.json'

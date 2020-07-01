@@ -1,0 +1,23 @@
+configuration:
+  factor_levels:
+    seed: '38479387'
+    test_factor: factor_value
+  factors: null
+  input_csv: ../../collect/tests/baseline/countydata1_FL.csv
+  n_steps_per_day: 4
+  output_json: output/recon_resampled_countydata1_all_38479387.json
+  population_csv: !!python/object/new:pyutilib.misc.misc.Options
+    dictitems:
+      file: ../../../examples/countydata/FL_county_population.csv
+      index: FIPS
+      population: pop_2019
+    state:
+      _name_: Options
+      file: ../../../examples/countydata/FL_county_population.csv
+      index: FIPS
+      population: pop_2019
+  reporting_multiplier: 10
+  seed: 38479387
+  verbose: true
+  workflow: reconstruction_resampled
+timestamp: '2020-07-01 14:56:48.266165'
