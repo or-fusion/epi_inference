@@ -7,7 +7,7 @@ from pyomo.opt import check_optimal_termination
 
 from .util import get_windows
 
-def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analysis_window, select_window=None, verbose=False):
+def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analysis_window, select_window=None, previous_results=None, verbose=False):
     """
     This function solves the least-squares inference inference formulation
     using the decay-based reconstruction function.
@@ -42,6 +42,7 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
     populations = dict()
     percent_mobile = dict()
     dates = None
+    dates_from_previous_results = None
     for nodeid in nodes:
         T_data[nodeid] = recon[nodeid]['transmissions']
         I1_data[nodeid] = recon[nodeid]['I1']
@@ -53,11 +54,13 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
 
         if dates is None:
             dates = recon[nodeid]['dates']
+            dates_from_previous_results = previous_results[nodeid]['date']
     timing.toc('setup population and mobility information')
 
     # define the tuples for the windows
-    windows = get_windows(dates, window_days=window, select_window=select_window)
+    windows = get_windows(dates, window_days=window, select_window=select_window, dates_from_previous_results=dates_from_previous_results)
     WINDOW_TIMES = windows.WINDOW_TIMES
+    KEEP_WINDOWS = windows.KEEP_WINDOWS
 
     # get the approximate transmissions over the window period
     window_transmissions = dict()
@@ -74,6 +77,7 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
         county['FIPS'] = i
         county['window_days'] = window
         county['date'] = [recon[i]['dates'][w] for w in WINDOW_TIMES]
+        county['previous_results'] = [w in KEEP_WINDOWS for w in WINDOW_TIMES]
         if i in nodes:
             county['population'] = recon[i]['population']
             county['beta'] = []
@@ -85,6 +89,18 @@ def run_multinode_mobility_window_decay_lsq_iterative(*, recon, mobility, analys
     # Setup and solve different problems for each window
     #
     for w in WINDOW_TIMES:
+        if w in KEEP_WINDOWS:
+            # Grab the results from the previous results
+            for i in recon:
+                if i not in nodes:
+                    continue
+                county = results[i]
+
+                county['beta'].append( previous_results[i]['beta'][w] )
+                county['status'].append( previous_results[i]['status'][w] )
+                county['infections_in_window'].append( previous_results[i]['infections_in_window'][w] )
+            continue
+
         timing.tic('Starting timer for model construction - Pyomo')
         model = pe.ConcreteModel()
         model.NODES = pe.Set(initialize=nodes, ordered=False)

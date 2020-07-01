@@ -61,3 +61,14 @@ select_mobility_windows:
     reconstruction_json: '../../reconstruction/tests/baseline/recon_countydata1_all.json'
     mobility_json: 'mobility_modified.json'
     output_json: 'output/tests1_inference_unsampled_countydata1_all_select_last_iterative.json'
+
+update_mobility_windows:
+-   workflow: 'estimate_beta_windows_with_mobility'
+    analysis_window:
+        days: 14
+    version: pyomo_iterative
+    update_from_json: 'baseline/tests1_inference_unsampled_countydata1_all_pyomo_iterative_truncated.json'
+    reconstruction_json: '../../reconstruction/tests/baseline/recon_countydata1_all.json'
+    mobility_json: 'mobility_modified.json'
+    output_json: 'output/tests1_inference_unsampled_countydata1_all_pyomo_iterative.json'
+
