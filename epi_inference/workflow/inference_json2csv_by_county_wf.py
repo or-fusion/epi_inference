@@ -4,6 +4,7 @@ import json
 import csv
 import glob
 import pandas as pd
+import yaml
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 1000)
 import numpy as np
@@ -11,41 +12,39 @@ import numpy as np
 from epi_inference.engine.task import Task
 from epi_inference.engine.task_registry import register_task
 
-def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_threshold):
+def create_inference_csv_by_county(*, input_json_filespec, seeds_yml, output_dir, low_inf_threshold):
     """
-    This function converts json files created by inference of the stochastic
+    This function converts json files created by inference of 
     reconstruction data and produces csv files for each county
     """
-    if output_dir and not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
+    #
+    # Get seeds
+    #
+    with open(seeds_yml, 'r') as INPUT:
+        seeds = yaml.save_load(INPUT)
+    #
+    # Collect the JSON filenames
+    #
+    json_filenames = {}
+    for seed in seeds:
+        filename = input_json_filespec % seed
+        if not os.path.exists(filename):
+            raise RuntimeError("ERROR: Inference JSON file does not exist: "+ filename)
+        json_filenames[seed] = filename
     #
     # loop through all the json files and append the necessary fields
     # to a dataframe
     #
-    json_filenames = list()
-    for filename in glob.glob(input_json_filespec):
-        if not os.path.exists(filename):
-            raise RuntimeError("ERROR: Inference JSON file does not exist: "+ filename)
-        json_filenames.append(filename)
-    json_filenames = sorted(json_filenames)
-
     counties_set = None
     county_dfs = dict()
-    for j, jsonfname in enumerate(json_filenames):
-        with open(jsonfname, 'r') as fd:
+    j = 0
+    for seed in sorted(seeds):
+        j += 1
+        with open(json_filenames[seed], 'r') as fd:
             d = json.load(fd)
 
         # this is not the best way to do this - we need to have the seed in the json output
-        seed = jsonfname[:-5][-7:]
-        try:
-            test = int(seed)
-        except:
-            print('inference_json2csv_by_county currently only works with json'
-                  ' files produced with inference of stochastic reconstructions'
-                  ' since it needs the seed')
-            raise
-        
+        seed = int(seed)
         print('... processing seed', seed, j, '/', len(json_filenames))
 
         # grab a list of counties the first time through
@@ -94,6 +93,8 @@ def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_thre
             county_dfs[c][seed] = dfc
 
 
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     summary_file = os.path.join(output_dir, 'inference_summary.txt')
     fd = open(summary_file, 'w')
     
@@ -119,7 +120,7 @@ class Inference_JSON2CSV_By_County_Workflow(Task):
             "Create a CSV file of inference results for each county.")
 
     def validate(self, CONFIG):
-        valid_options = set(['input_json', 'output_dir', 'low_infection_threshold', 'factors', 'factor_levels', 'workflow', 'verbose'])
+        valid_options = set(['input_json', 'seeds_yml', 'output_dir', 'low_infection_threshold', 'factors', 'factor_levels', 'workflow', 'verbose'])
         for key in CONFIG:
             if key not in valid_options:
                 raise RuntimeError("Unexpected configuration option: '%s'" % key)
@@ -129,6 +130,7 @@ class Inference_JSON2CSV_By_County_Workflow(Task):
         self.validate(CONFIG)
         create_inference_csv_by_county(
             input_json_filespec=CONFIG['input_json'],
+            seeds_yml=CONFIG['seeds_yml'],
             output_dir=CONFIG.get('output_dir', None),
             low_inf_threshold=int(CONFIG.get('low_infection_threshold', 0))
             )
