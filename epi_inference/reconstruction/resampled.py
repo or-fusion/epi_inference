@@ -60,7 +60,7 @@ def sample_county_negbin(dat, county, window=3, n_samples=1, seed=123456789):
     idx_range = list(range(window, dat.shape[0]))  # Instead using a symmetric window until the end, then using past data
 
     # If the county has no cases, keep them all at zero
-    r = 0
+    # r = 0
     if dat[county].iloc[-1] == 0:
         samples_negbin = pd.DataFrame(np.zeros((len(idx_range), n_samples)))
     else:
@@ -68,25 +68,26 @@ def sample_county_negbin(dat, county, window=3, n_samples=1, seed=123456789):
         daily_increases = np.array(dat[county][1:dat.shape[0]] - dat[county][0:(dat.shape[0] - 1)].values)
         daily = np.concatenate(([initial], daily_increases))
         samples_negbin = pd.DataFrame(columns=['s' + str(i) for i in range(1, n_samples+1)])
-    samples_negbin.loc[r] = 0
-    r += 1
-    for i in range((window + 1), dat.shape[0]):
-        if i > dat.shape[0] - window:
-            window_data = daily[(len(daily) - (2 * window + 1)): len(daily)]
-        else:
-            # Using a symmetric window (window size is number of days on either side of date of interest)
-            window_data = daily[(i - window):(i + window)]
-        if (all(window_data == 0)):
-            # Need to force the negative binomial parameters to get a fit in some cases
-            params = [0,1]
-        else:
-            if min(window_data) < 2:
-                low = 0.1
+    # samples_negbin.loc[r] = 0
+    # r += 1
+        r = 0
+        for i in range((window + 1), dat.shape[0]):
+            if i > dat.shape[0] - window:
+                window_data = daily[(len(daily) - (2 * window + 1)): len(daily)]
             else:
-                low = 1
-            params = r_fit_negbin(window_data, low, seed)
-        samples_negbin.loc[r] = MASS.rnegbin(n_samples, params[0], params[1])
-        r += 1
+                # Using a symmetric window (window size is number of days on either side of date of interest)
+                window_data = daily[(i - window):(i + window)]
+            if (all(window_data == 0)):
+                # Need to force the negative binomial parameters to get a fit in some cases
+                params = [0,1]
+            else:
+                if min(window_data) < 2:
+                    low = 0.1
+                else:
+                    low = 1
+                params = r_fit_negbin(window_data, low, seed)
+            samples_negbin.loc[r] = MASS.rnegbin(n_samples, params[0], params[1])
+            r += 1
 
     # Reformat: add date and FIPS column, and make a cumulative sum instead of daily counts
     samples_cases = samples_negbin.cumsum()
