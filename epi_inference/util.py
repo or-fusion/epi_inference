@@ -103,7 +103,7 @@ def compare_json(output_file, baseline_file, abs_tol=1e-6):            # pragma:
         baseline = json.load(INPUT)
     d = list(recursive_diff(baseline, output, abs_tol=abs_tol))
     if len(d) != 0:
-        print('DIFFERENCES IN JSON')
+        print('DIFFERENCES IN JSON FILES: %s and %s' % (output_file, baseline_file))
         pprint.pprint(d)
     assert(len(d) == 0)
     return output, baseline
