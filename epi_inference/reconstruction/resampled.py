@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 #import matplotlib.pyplot as plt
 #from matplotlib.backends.backend_pdf import PdfPages
 #import math
-from pyutilib.misc.misc import Bunch
+from pyutilib.misc import timing
 from .stochastic import populate_compartments
 
 import rpy2.robjects as robjects
@@ -24,8 +24,7 @@ import rpy2.robjects.numpy2ri
 
 rpy2.robjects.numpy2ri.activate()
 rstring="""
-    function(window_data, low, seed){
-        set.seed(seed)
+    function(window_data, low){
         library(MASS)
         fit <- TRUE
         fit <- tryCatch(fitdistr(window_data, 'Negative Binomial', lower = low), 
@@ -46,7 +45,7 @@ r_fit_negbin = robjects.r(rstring)
 
 # Symmetric window, so this is the number of days on either side of the day being calculated,
 # leaving a total window size of 2xwindow + 1 days
-def sample_county_negbin(dat, county, window=3, n_samples=1, seed=123456789):
+def sample_county_negbin(*, dat, county, parameters, window=3, n_samples=1):
     # Q: just do this once?
     base = importr('base')
     utils = importr('utils')
@@ -61,7 +60,8 @@ def sample_county_negbin(dat, county, window=3, n_samples=1, seed=123456789):
 
     # If the county has no cases, keep them all at zero
     if dat[county].iloc[-1] == 0:
-        samples_negbin = pd.DataFrame(np.zeros((len(idx_range), n_samples)))
+        return [0] * len(idx_range)
+        #samples_negbin = pd.DataFrame(np.zeros((len(idx_range), n_samples)))
     else:
         initial = dat[county][0]
         daily_increases = np.array(dat[county][1:dat.shape[0]] - dat[county][0:(dat.shape[0] - 1)].values)
@@ -87,7 +87,12 @@ def sample_county_negbin(dat, county, window=3, n_samples=1, seed=123456789):
                     low = 0.1
                 else:
                     low = 1
-                params = r_fit_negbin(window_data, low, seed)
+                if county not in parameters:
+                    parameters[county] = {}
+                if r in parameters[county]:
+                    params = parameters[county][r]
+                else:
+                    params = parameters[county][r] = r_fit_negbin(window_data, low)
             samples_negbin.loc[r] = MASS.rnegbin(n_samples, params[0], params[1])
             r += 1
 

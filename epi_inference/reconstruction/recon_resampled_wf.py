@@ -5,6 +5,8 @@ import datetime
 #import pandas as pd
 from pyutilib.misc import timing
 
+import rpy2.robjects as robjects
+
 from ..engine.task import Task
 from ..engine.task_registry import register_task
 from ..engine.misc import save_metadata
@@ -15,7 +17,7 @@ from ..reconstruction.resampled import resampled_reconstruction, sample_county_n
 from ..reconstruction.common import reported_cases_from_cumulative
 
 
-def run_county(county, df, population, CONFIG, warnings):
+def run_county(county, df, population, CONFIG, warnings, cache):
     #
     # Initialize results dictionary
     #
@@ -26,7 +28,7 @@ def run_county(county, df, population, CONFIG, warnings):
     #
     # Get the cumulative cases
     #
-    cumulative_reported_cases = sample_county_negbin(df, county, seed=CONFIG.get('seed',None))
+    cumulative_reported_cases = sample_county_negbin(dat=df, county=county, parameters=cache)
 
     # reconstruct the states
     Cdates = [datetime.date.fromisoformat(day) for day in df.index.to_list()]
@@ -77,13 +79,18 @@ def run(CONFIG, warnings):
     else:
         counties = df.keys()
 
+    if 'seed' in CONFIG:
+        robjects.r('set.seed(%s)' % str(CONFIG['seed']))
+    else:
+        robjects.r('set.seed(123456789)')
     if CONFIG['verbose']:
         timing.tic()
-    for t in counties:
+    cache={}
+    for t in sorted(counties):
         if t not in population_df[CONFIG['population_csv']['population']]:
             warnings.append("WARNING: county %s does not have population data available" % str(t))
             continue
-        results[t] = run_county(t, df, population_df[CONFIG['population_csv']['population']][t], CONFIG, warnings)
+        results[t] = run_county(t, df, population_df[CONFIG['population_csv']['population']][t], CONFIG, warnings, cache)
     if CONFIG['verbose']:
         timing.toc("Serial Execution")
     #
