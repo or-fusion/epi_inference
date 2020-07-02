@@ -181,8 +181,8 @@ def run_block_parallel_workflows(workflow_blocks, args, config_parameters):
 
 def run_block_multiworkflow(CONFIG, warnings, config):
     for block in CONFIG['blocks']:
-        if 'num_processes' in CONFIG:
-            np = int(CONFIG['num_processes'])
+        np = int(CONFIG.get('num_processes',1))
+        if np > 1:
             if CONFIG.get('parallel_workflows',False):
                 args = Options(block=block,
                                 np=np,
@@ -239,10 +239,10 @@ def run(args):
         print("ERROR: Cannot parallelize workflows.  The 'joblib' packages is not installed.")
         return
 
-    if args.parallelize_workflows:
+    if args.parallelize_workflows and args.np > 1:
         run_block_parallel_workflows(workflow_blocks, args, get_config_parameters())
 
-    elif args.parallelize_factors:
+    elif args.parallelize_factors and args.np > 1:
         run_block_parallel_factors(workflow_blocks, args, get_config_parameters())
 
     else:

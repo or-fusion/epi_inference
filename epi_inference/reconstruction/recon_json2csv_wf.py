@@ -2,7 +2,10 @@ __all__ = ['recon_single_json2csv', 'recon_many_json2csv']
 
 import sys
 import os.path
-import json
+try:
+    import ujson as json
+except:
+    import json
 import csv
 import glob
 

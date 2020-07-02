@@ -1,15 +1,17 @@
 import sys
 import os.path
-import json
+try:
+    import ujson as json
+except:
+    import json
 import csv
 import glob
 import pandas as pd
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', 1000)
 import numpy as np
 
 from epi_inference.engine.task import Task
 from epi_inference.engine.task_registry import register_task
+
 
 def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_threshold):
     """
@@ -125,6 +127,8 @@ class Inference_JSON2CSV_By_County_Workflow(Task):
                 raise RuntimeError("Unexpected configuration option: '%s'" % key)
 
     def run(self, data, CONFIG):
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.width', 1000)
         self._warnings = []
         self.validate(CONFIG)
         create_inference_csv_by_county(

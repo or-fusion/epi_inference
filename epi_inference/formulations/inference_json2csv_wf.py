@@ -2,7 +2,10 @@ __all__ = ['run', 'inference_json2csv']
 
 import sys
 import os.path
-import json
+try:
+    import ujson as json
+except:
+    import json
 import csv
 
 from ..engine.task import Task

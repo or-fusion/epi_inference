@@ -1,7 +1,10 @@
 import pytest
 import os
 import os.path
-import json
+try:
+    import ujson as json
+except:
+    import json
 import yaml
 import numpy as np
 import pandas as pd

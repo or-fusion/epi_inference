@@ -86,7 +86,7 @@ def run(CONFIG, warnings):
 
     parallel = ('parallel' in CONFIG) and (len(counties) >= CONFIG['parallel'].get('number_of_counties',10))
 
-    if parallel:
+    if parallel and np > 1:
         if CONFIG['verbose']:
             timing.tic()
         available_counties = []
