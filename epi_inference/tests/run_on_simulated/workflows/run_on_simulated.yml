@@ -10,7 +10,7 @@ config_dir:     "./config"
 counties_file:  "${config_dir}/counties.yml"
 
 results_dir:    "./results/${data_name}/"
-num_processes:  4
+num_processes:  1
 
 #
 # Workflow blocks

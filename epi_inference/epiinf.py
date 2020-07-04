@@ -7,7 +7,7 @@ def main():
         tmpdir = os.path.join(os.environ["HOME"],".epiinf","tmp")
     else:
         tmpdir = os.path.join(os.getcwd(),"epiinf_tmp")
-    driver(tmpdir=tmpdir)
+    driver(tmpdir=tmpdir, command='epiinf')
 
 if __name__ == "__main__":
     main()

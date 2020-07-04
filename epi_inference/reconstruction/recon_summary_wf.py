@@ -2,7 +2,10 @@ __all__ = ['recon_summary']
 
 import sys
 import os.path
-import json
+try:
+    import ujson as json
+except:
+    import json
 import glob
 import numpy as np
 from pyutilib.misc import timing

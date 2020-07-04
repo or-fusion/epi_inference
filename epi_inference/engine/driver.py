@@ -6,7 +6,7 @@ import datetime
 import argparse
 import yaml
 import pprint
-from pyutilib.misc import Options
+from pyutilib.misc import Options, timing
 import pyutilib.services
 try:
     import joblib
@@ -21,7 +21,7 @@ from .misc import save_metadata
 
 global_tempdir = None
 
-def driver(tmpdir=None):
+def driver(tmpdir=None, command='unknown'):
     if os.environ.get('TMPDIR',tmpdir) is not None:
         _tmpdir = os.environ.get('TMPDIR',tmpdir)
         if not os.path.exists(_tmpdir):
@@ -32,6 +32,10 @@ def driver(tmpdir=None):
         global_tempdir = _tmpdir
 
     Parser = argparse.ArgumentParser(description='inference models')
+    Parser.add_argument('-c', '--catch-errors', action='store_true', default=False,
+                    help='Catch exceptions')
+    Parser.add_argument('-q', '--quiet', action='store_true', default=False,
+                    help='Suppress diagnostic')
     Parser.add_argument('-v', '--verbose', action='store_true', default=False,
                     help='Verbosity flag')
     Parser.add_argument('-P', '--parallelize-workflows', action='store_true', default=False,
@@ -50,7 +54,17 @@ def driver(tmpdir=None):
     # Parse sys.argv
     #
     args = Parser.parse_args()
-    run(args)
+    if not args.quiet:
+        timing.tic('Starting '+command)
+    if args.catch_errors:
+        run(args)
+    else:
+        try:
+            run(args)
+        except Exception as e:
+            print("Error: "+str(e))
+    if not args.quiet:
+        timing.toc('Finishing '+command)
 
 
 def run_workflow(task, CONFIG, data, tempdir):
@@ -167,8 +181,8 @@ def run_block_parallel_workflows(workflow_blocks, args, config_parameters):
 
 def run_block_multiworkflow(CONFIG, warnings, config):
     for block in CONFIG['blocks']:
-        if 'num_processes' in CONFIG:
-            np = int(CONFIG['num_processes'])
+        np = int(CONFIG.get('num_processes',1))
+        if np > 1:
             if CONFIG.get('parallel_workflows',False):
                 args = Options(block=block,
                                 np=np,
@@ -225,10 +239,10 @@ def run(args):
         print("ERROR: Cannot parallelize workflows.  The 'joblib' packages is not installed.")
         return
 
-    if args.parallelize_workflows:
+    if args.parallelize_workflows and args.np > 1:
         run_block_parallel_workflows(workflow_blocks, args, get_config_parameters())
 
-    elif args.parallelize_factors:
+    elif args.parallelize_factors and args.np > 1:
         run_block_parallel_factors(workflow_blocks, args, get_config_parameters())
 
     else:

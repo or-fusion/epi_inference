@@ -1,7 +1,10 @@
 __all__ = ['run']
 
 import sys
-import json
+try:
+    import ujson as json
+except:
+    import json
 from pyutilib.misc import timing
 
 from ..engine.task import Task
