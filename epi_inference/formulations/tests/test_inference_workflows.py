@@ -1,6 +1,5 @@
 import pytest
 import os
-import os.path
 import shutil
 
 from pyomo.common import fileutils as fileutils
@@ -36,7 +35,9 @@ class TestInference():
         compare_json('./output/tests1_inference_unsampled_countydata1_all.json', './baseline/tests1_inference_unsampled_countydata1_all.json')
 
         compare_json('./output/tests1_inference_unsampled_countydata1_all_new.json', './baseline/tests1_inference_unsampled_countydata1_all.json')
-        compare_json('./output/tests1_inference_unsampled_countydata1_all_pyomo_iterative.json', './baseline/tests1_inference_unsampled_countydata1_all.json', abs_tol=1e-3)
+        compare_json('./output/tests1_inference_unsampled_countydata1_all_pyomo_iterative.json', './baseline/tests1_inference_unsampled_countydata1_all.json',
+                     abs_tol=1e-3, skip_keys=['days_since_first_reported', 'reported_cases_over_window', 'infectious_pop_over_window', 'transmissions_over_window'])
+        compare_json('./output/tests1_inference_unsampled_countydata1_all_pyomo_iterative.json', './baseline/tests1_inference_unsampled_countydata1_all_pyomo_iterative.json', abs_tol=1e-3)
     
         # cleanup the files we created
         os.remove('./output/tests1_inference_unsampled_countydata1_all.json')
@@ -69,7 +70,9 @@ class TestInference():
         # check that the csv files load into dataframes that have the correct numbers and shapes
         compare_json('./output/tests1_inference_unsampled_countydata1_all_select_last.json', './baseline/tests1_inference_unsampled_countydata1_all_select_last.json')
         compare_json('./output/tests1_inference_unsampled_countydata1_all_select_20200404.json', './baseline/tests1_inference_unsampled_countydata1_all_select_last.json')
-        compare_json('./output/tests1_inference_unsampled_countydata1_all_select_last_iterative.json', './baseline/tests1_inference_unsampled_countydata1_all_select_last.json')
+        compare_json('./output/tests1_inference_unsampled_countydata1_all_select_last_iterative.json', './baseline/tests1_inference_unsampled_countydata1_all_select_last.json',
+                     abs_tol=1e-3, skip_keys=['days_since_first_reported', 'reported_cases_over_window', 'infectious_pop_over_window', 'transmissions_over_window'])
+        compare_json('./output/tests1_inference_unsampled_countydata1_all_select_last_iterative.json', './baseline/tests1_inference_unsampled_countydata1_all_select_last_iterative.json')
     
         # cleanup the files we created
         os.remove('./output/tests1_inference_unsampled_countydata1_all_select_last.json')

@@ -41,7 +41,13 @@ def run(CONFIG, warnings):
         elif CONFIG.get('version') == 'pyomo_old':
             results = run_multinode_mobility_window_decay_lsq_old(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], verbose=CONFIG['verbose'])
         elif CONFIG.get('version') == 'pyomo_iterative':
-            results = run_multinode_mobility_window_decay_lsq_iterative(recon=recon, mobility=mobility, analysis_window=CONFIG['analysis_window'], select_window=CONFIG.get('select_window', None), verbose=CONFIG['verbose'])
+            results = run_multinode_mobility_window_decay_lsq_iterative(
+                recon=recon,
+                mobility=mobility,
+                analysis_window=CONFIG['analysis_window'],
+                objective=CONFIG.get('objective', 'lsq'),
+                select_window=CONFIG.get('select_window', None),
+                verbose=CONFIG['verbose'])
     else:
     #except Exception as err:
         print("ERROR: Unexpected exception '%s'" % str(err))
@@ -61,7 +67,7 @@ class InferenceMobilityWindows(Task):
             "Estimate beta over different time windows using inter-county mobility information.")
 
     def validate(self, args):
-        valid_options = set(['reconstruction_json', 'mobility_json', 'output_json', 'version', 'analysis_window', 'select_window', 'verbose', 'factors', 'factor_levels', 'workflow'])
+        valid_options = set(['reconstruction_json', 'mobility_json', 'output_json', 'version', 'analysis_window', 'select_window', 'verbose', 'factors', 'factor_levels', 'workflow', 'objective'])
 
     def run(self, data, CONFIG):
         self._warnings = []

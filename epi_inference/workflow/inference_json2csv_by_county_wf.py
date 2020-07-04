@@ -12,8 +12,7 @@ import numpy as np
 from epi_inference.engine.task import Task
 from epi_inference.engine.task_registry import register_task
 
-
-def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_threshold):
+def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_threshold, min_data_days_threshold):
     """
     This function converts json files created by inference of the stochastic
     reconstruction data and produces csv files for each county
@@ -72,27 +71,36 @@ def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_thre
             dc['dates'] = dc['date']
             del dc['date']
 
-            # build the low infections filter
+            # build the filtered data
             low_inf = list()
+            low_data_days = list()
             filtered_est_beta = list()
-            
             for i in range(len(dc['dates'])):
                 inf = dc['infections_in_window'][i]
-                beta = dc['raw_est_beta'][i]
+                data_days = dc['days_since_first_reported'][i]
+                filtered_beta = dc['raw_est_beta'][i]
                 if inf < low_inf_threshold:
                     low_inf.append(True)
-                    filtered_est_beta.append(None)
+                    filtered_beta = None
                 else:
                     low_inf.append(False)
-                    filtered_est_beta.append(beta)
+
+                if data_days < min_data_days_threshold:
+                    low_data_days.append(True)
+                    filtered_beta = None
+                else:
+                    low_data_days.append(False)
+
+                filtered_est_beta.append(filtered_beta)
             dc['low_infections_in_window(<{})'.format(low_inf_threshold)] = low_inf
+            dc['low_data_days(<{}days)'.format(min_data_days_threshold)] = low_data_days
             dc['filtered_est_beta'] = filtered_est_beta
 
             dfc = pd.DataFrame(dc)
             dfc.fillna(value=np.nan, inplace=True)
             if c not in county_dfs:
                 county_dfs[c] = dict()
-                
+
             county_dfs[c][seed] = dfc
 
 
@@ -134,7 +142,8 @@ class Inference_JSON2CSV_By_County_Workflow(Task):
         create_inference_csv_by_county(
             input_json_filespec=CONFIG['input_json'],
             output_dir=CONFIG.get('output_dir', None),
-            low_inf_threshold=int(CONFIG.get('low_infection_threshold', 0))
+            low_inf_threshold=int(CONFIG.get('low_infection_threshold', 0)),
+            min_data_days_threshold=int(CONFIG.get('min_data_days_threshold', 14))
             )
 
 register_task(Inference_JSON2CSV_By_County_Workflow())
@@ -146,5 +155,6 @@ if __name__ == '__main__':
     create_inference_csv_by_county(
         input_json_filespec=json_filespec,
         output_dir=output_dir,
-        low_inf_threshold=low_infection_threshold
+        low_inf_threshold=low_infection_threshold,
+        min_data_days_threshold=14
         )

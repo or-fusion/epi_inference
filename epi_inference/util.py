@@ -1,4 +1,5 @@
 import os
+import re
 #import itertools
 #from pyutilib.misc import Options
 #import string
@@ -96,15 +97,30 @@ def compare_csv(output, gold, index_col=None, check_exact=False, sort=True):
     return outputdf, golddf
 
 
-def compare_json(output_file, baseline_file, abs_tol=1e-6):            # pragma: no cover
+def compare_json(output_file, baseline_file, abs_tol=1e-6, skip_keys=None):            # pragma: no cover
     with open(output_file,'r') as INPUT:
         output = json.load(INPUT)
     with open(baseline_file,'r') as INPUT:
         baseline = json.load(INPUT)
-    d = list(recursive_diff(baseline, output, abs_tol=abs_tol))
-    if len(d) != 0:
+    diffs = list(recursive_diff(baseline, output, abs_tol=abs_tol))
+
+    # process the skip_keys if necessary
+    if len(diffs) != 0 and skip_keys is not None:
+        unskipped_diffs = list()
+        for d in diffs:
+            add = True
+            for k in skip_keys:
+                e = re.compile('.*: Pair {}:.*is in [RL]HS only'.format(k))
+                if e.match(d):
+                    add = False
+                    break
+            if add:
+                unskipped_diffs.append(d)
+        diffs = unskipped_diffs
+
+    if len(diffs) != 0:
         print('DIFFERENCES IN JSON')
-        pprint.pprint(d)
-    assert(len(d) == 0)
+        pprint.pprint(diffs)
+    assert(len(diffs) == 0)
     return output, baseline
 

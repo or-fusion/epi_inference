@@ -49,3 +49,19 @@ def get_windows(dates, last_day_of_window=5, window_days=7, select_window=None):
 
     return ans
 
+def indices_since_first_nonzero(data):
+    idx_first = None
+    for i,v in enumerate(data):
+        if v > 0:
+            idx_first = i
+            break
+
+    if idx_first is None:
+        return [0]*len(data)
+
+    indices_since_first_nz = list()
+    for i in range(len(data)):
+        indices_since_first_nz.append(0)
+        if i > idx_first:
+            indices_since_first_nz[i] = indices_since_first_nz[i-1]+1
+    return indices_since_first_nz
