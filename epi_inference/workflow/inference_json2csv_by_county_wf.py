@@ -104,8 +104,8 @@ def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_thre
             county_dfs[c][seed] = dfc
 
 
-    summary_file = os.path.join(output_dir, 'inference_summary.txt')
-    fd = open(summary_file, 'w')
+    description_file = os.path.join(output_dir, 'inference_description.txt')
+    fd = open(description_file, 'w')
     
     for i,c in enumerate(sorted_counties):
         print('... processing county', c, i, '/', len(sorted_counties))
@@ -114,12 +114,52 @@ def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_thre
         county_df = pd.concat(county_dfs[c].values())
 
         print('County:', c)
-        summary_str = county_df.describe(include='all')
-        fd.write(summary_str.to_string())
+        description_str = county_df.describe(include='all')
+        fd.write(description_str.to_string())
         fd.write('\n')
 
         fname = os.path.join(output_dir, 'estimated_beta_county_{}.csv'.format(c))
         county_df.to_csv(fname, quoting=csv.QUOTE_NONNUMERIC, index=False)
+
+        # get the status across the seeds
+        q05_raw = county_df.groupby('dates')['raw_est_beta'].quantile(.05)
+        q05_raw.rename('q05_raw_est_beta', inplace=True)
+        q25_raw = county_df.groupby('dates')['raw_est_beta'].quantile(.25)
+        q25_raw.rename('q25_raw_est_beta', inplace=True)
+        q50_raw = county_df.groupby('dates')['raw_est_beta'].quantile(.50)
+        q50_raw.rename('q50_raw_est_beta', inplace=True)
+        qmean_raw = county_df.groupby('dates')['raw_est_beta'].mean()
+        qmean_raw.rename('qmean_raw_est_beta', inplace=True)
+        q75_raw = county_df.groupby('dates')['raw_est_beta'].quantile(.75)
+        q75_raw.rename('q75_raw_est_beta', inplace=True)
+        q95_raw = county_df.groupby('dates')['raw_est_beta'].quantile(.95)
+        q95_raw.rename('q95_raw_est_beta', inplace=True)
+
+        q05_filtered = county_df.groupby('dates')['filtered_est_beta'].quantile(.05)
+        q05_filtered.rename('q05_filtered_est_beta', inplace=True)
+        q25_filtered = county_df.groupby('dates')['filtered_est_beta'].quantile(.25)
+        q25_filtered.rename('q25_filtered_est_beta', inplace=True)
+        q50_filtered = county_df.groupby('dates')['filtered_est_beta'].quantile(.50)
+        q50_filtered.rename('q50_filtered_est_beta', inplace=True)
+        qmean_filtered = county_df.groupby('dates')['filtered_est_beta'].mean()
+        qmean_filtered.rename('qmean_filtered_est_beta', inplace=True)
+        q75_filtered = county_df.groupby('dates')['filtered_est_beta'].quantile(.75)
+        q75_filtered.rename('q75_filtered_est_beta', inplace=True)
+        q95_filtered = county_df.groupby('dates')['filtered_est_beta'].quantile(.95)
+        q95_filtered.rename('q95_filtered_est_beta', inplace=True)
+
+        county_df_summary = pd.concat([q05_filtered, q25_filtered,
+                                       q50_filtered, q75_filtered,
+                                       q95_filtered, qmean_filtered,
+                                       q05_raw, q25_raw,
+                                       q50_raw, q75_raw,
+                                       q95_raw, qmean_raw],
+                                      axis=1)
+        county_df_summary = county_df_summary.reset_index()
+
+        fname = os.path.join(output_dir, 'summary_estimated_beta_county_{}.csv'.format(c))
+        county_df_summary.to_csv(fname, quoting=csv.QUOTE_NONNUMERIC, index=False)
+
     fd.close()
 
 
