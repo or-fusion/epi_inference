@@ -424,7 +424,7 @@ def test_stochastic_reconstruction():
     dfsimT = pd.DataFrame({'dates':sim.SEIIIR.dates, 'sim':sim.SEIIIR.transmissions}).set_index('dates')
     assert_if_mean_significantly_different(dfT, dfsimT, 4, 0.2)
     dfsimS = pd.DataFrame({'dates':sim.SEIIIR.dates, 'sim':sim.SEIIIR.S}).set_index('dates')
-    assert_if_mean_significantly_different(dfS, dfsimS, 4, 0.2)
+    assert_if_mean_significantly_different(dfS, dfsimS, 4, 0.25)
     dfsimE = pd.DataFrame({'dates':sim.SEIIIR.dates, 'sim':sim.SEIIIR.E}).set_index('dates')
     assert_if_mean_significantly_different(dfE, dfsimE, 4, 0.2)
     dfsimI1 = pd.DataFrame({'dates':sim.SEIIIR.dates, 'sim':sim.SEIIIR.I1}).set_index('dates')

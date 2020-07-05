@@ -114,7 +114,7 @@ def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_thre
         county_df = pd.concat(county_dfs[c].values())
 
         print('County:', c)
-        description_str = county_df.describe(include='all')
+        description_str = county_df.describe(include=None, exclude=[list])
         fd.write(description_str.to_string())
         fd.write('\n')
 
