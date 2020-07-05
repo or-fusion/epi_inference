@@ -104,8 +104,8 @@ def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_thre
             county_dfs[c][seed] = dfc
 
 
-    summary_file = os.path.join(output_dir, 'inference_summary.txt')
-    fd = open(summary_file, 'w')
+    description_file = os.path.join(output_dir, 'inference_description.txt')
+    fd = open(description_file, 'w')
     
     for i,c in enumerate(sorted_counties):
         print('... processing county', c, i, '/', len(sorted_counties))
@@ -114,8 +114,8 @@ def create_inference_csv_by_county(input_json_filespec, output_dir, low_inf_thre
         county_df = pd.concat(county_dfs[c].values())
 
         print('County:', c)
-        summary_str = county_df.describe(include='all')
-        fd.write(summary_str.to_string())
+        description_str = county_df.describe(include='all')
+        fd.write(description_str.to_string())
         fd.write('\n')
 
         fname = os.path.join(output_dir, 'estimated_beta_county_{}.csv'.format(c))
