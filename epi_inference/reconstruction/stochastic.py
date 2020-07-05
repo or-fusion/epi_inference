@@ -101,10 +101,9 @@ def stochastic_reconstruction(*, dates, reported_cases_per_day, population, n_st
                     if r_timestep - delay_timestep + padding_timesteps >= 0:
                         tcases_timestep[r_timestep - delay_timestep + padding_timesteps] += 1
 
-    # truncate 2*reporting_delay_mean days off of the transmissions
+    # truncate some days off of the transmissions
     # since we don't yet have the reported cases to estimate this appropriately
-    # 2*reporting_delay_mean might not be enough
-    int_delay = int(np.round(2*reporting_delay_mean))
+    int_delay = int(np.round(1.64*reporting_delay_mean))
     t_daily_dates = [dates[0] + timedelta(days=i) for i in range(-padding_days, n_r_days - int_delay)]
     tcases_timestep = tcases_timestep[: -int_delay * n_steps_per_day]
 
@@ -315,11 +314,10 @@ def np_stochastic_reconstruction(*, dates,
                     for delay_timestep in delays_timesteps:
                         tcases_timestep[r_timestep - delay_timestep + padding_timesteps,c] += 1
 
-    # truncate 2*reporting_delay_mean days off of the transmissions
+    # truncate days off of the transmissions
     # since we don't yet have the reported cases to estimate this appropriately
-    # 2*reporting_delay_mean might not be enough
-    t_daily_dates = np.asarray([dates[0] + timedelta(days=i) for i in range(-padding_days, n_r_days-2*reporting_delay_mean)],dtype=object)
-    tcases_timestep = tcases_timestep[:-2*reporting_delay_mean*n_steps_per_day,:]
+    t_daily_dates = np.asarray([dates[0] + timedelta(days=i) for i in range(-padding_days, n_r_days-1.64*reporting_delay_mean)],dtype=object)
+    tcases_timestep = tcases_timestep[:-1.64*reporting_delay_mean*n_steps_per_day,:]
     n_timesteps = len(tcases_timestep)
     
     # create arrays to store compartment numbers
