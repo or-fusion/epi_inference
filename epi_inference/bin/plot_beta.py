@@ -4,7 +4,12 @@ import matplotlib.pyplot as plt
 
 def add_line_ribbon(ax, fname, ribbon=False, infectious_period=None):
     df = pd.read_csv(fname, parse_dates=['dates'])
-    df.dropna(axis=0, inplace=True)    
+    fvi = df['qmean_filtered_est_beta'].first_valid_index()
+    if fvi is None:
+        print('No data found in {}'.format(fname))
+        return
+
+    df = df.loc[fvi:]
     x = df['dates'].values
     ym = df['qmean_filtered_est_beta'].values*infectious_period
     if ribbon:
