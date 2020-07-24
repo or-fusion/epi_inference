@@ -91,5 +91,5 @@ if __name__ == '__main__':
 
     fname = sys.argv[1]
     print(fname)
-    test = save_county_negbin_parameters_cases(fname)
-    test.to_csv('/Users/astaid/Desktop/test_params.csv', index=False)
+    save_params = save_county_negbin_parameters_cases(fname)
+    save_params.to_csv('../../covid-data/formatted_data/resample_parameters/negbin_params_' + fname[-11:-1] + '.csv', index=False)
