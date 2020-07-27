@@ -21,7 +21,7 @@ currdir = os.path.dirname(__file__)
 NON_CONTINENTAL = set(['02','15','60','66','69','72','78'])
 
 
-def get_values_scenario(gdf, results_json, date, value, value_name):
+def get_values_scenario(gdf, results_json, date, value='beta', value_name='beta'):
     if date is None:
         index=-1
         for fips in results_json:
@@ -50,7 +50,7 @@ def get_values_scenario(gdf, results_json, date, value, value_name):
 
     ans = {}
     if len(all_values) == 0:
-        return ans
+        return ans, None
     ans[value_name] = vals
     ans['Solver Status'] = status
     ans['Date'] = datestring
@@ -78,9 +78,10 @@ def create_us_choropleth_scenario(*, results_json, value_key, date=None, shapefi
     #
     gdf = gdf[['GEOID', 'NAME', 'geometry']]
     gdf.columns = ['fips', 'county_name', 'geometry']
-    val_list, status_list, all_values, datestring = get_values(gdf, results_json, date, value_key)
-    gdf.insert(1, "solver_status", status_list)
-    gdf.insert(1, "plot_value", val_list)
+    all_values, max_value = get_values_scenario(gdf, results_json, date, value_key)
+    datestring = all_values['Date']
+    gdf.insert(1, "solver_status", all_values['Solver Status'])
+    gdf.insert(1, "plot_value", all_values['beta'])
     #
     # Create GeoJSONDataSource
     #
@@ -92,7 +93,7 @@ def create_us_choropleth_scenario(*, results_json, value_key, date=None, shapefi
     # maximum value on the scale, or it will be inferred here
     #
     if max_value is None:
-        max_value = int(max(all_values))+1
+        max_value = int(max_value)+1
     if crange is None:
         crange = [0, max_value]
     else:

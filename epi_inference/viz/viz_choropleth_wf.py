@@ -61,7 +61,7 @@ class Viz_ChoroplethScenario(Task):
     def run(self, data, CONFIG):
         self._warnings = []
         self.validate(CONFIG)
-        run(CONFIG, self._warnings)
+        run_scenario(CONFIG, self._warnings)
 
     def warnings(self):
         return self._warnings
@@ -82,7 +82,7 @@ class Viz_ChoroplethSummary(Task):
     def run(self, data, CONFIG):
         self._warnings = []
         self.validate(CONFIG)
-        run(CONFIG, self._warnings)
+        run_summary(CONFIG, self._warnings)
 
     def warnings(self):
         return self._warnings
