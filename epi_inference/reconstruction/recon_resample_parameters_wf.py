@@ -1,17 +1,13 @@
 import sys
-import rpy2.robjects as robjects
 import os
-from rpy2.robjects.packages import importr
 import pandas as pd
 import numpy as np
+import rpy2.robjects as robjects
+from rpy2.robjects.packages import importr
 import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
 
-base = importr('base')
-utils = importr('utils')
-# utils.install_packages('MASS', type='source')
-MASS = importr('MASS')
-
+from ..engine.task import Task
+from ..engine.task_registry import register_task
 
 
 rstring="""
@@ -32,7 +28,18 @@ rstring="""
         c(p1, p2)
     }
 """
-r_fit_negbin = robjects.r(rstring)
+
+def initialize_R():
+    rpy2.robjects.numpy2ri.activate()
+    base = importr('base')
+    utils = importr('utils')
+    try:
+        MASS = importr('MASS')
+    except:
+        utils.install_packages('MASS', type='source')
+        MASS = importr('MASS')
+    r_fit_negbin = robjects.r(rstring)
+
 
 # Symmetric window, so this is the number of days on either side of the day being calculated,
 # leaving a total window size of 2xwindow + 1 days
@@ -82,6 +89,30 @@ def save_county_negbin_parameters_cases(data_directory):
                 r += 1
             param_cases = param_cases.append(county_case_params)
     return param_cases
+
+
+class ReconstructionEstimateParameters(Task):
+
+    def __init__(self):
+        Task.__init__(self, "reconstruction_estimate_parameters",
+            "Estimate parameters used for resampling.")
+
+    def validate(self, CONFIG):
+        valid_options = set(['data_directory', 'output_csv', 'verbose', 'factors', 'factor_levels', 'workflow'])
+        for key in CONFIG:
+            if key not in valid_options:
+                raise RuntimeError("Unexpected configuration option: '%s'" % key)
+
+    def run(self, data, CONFIG):
+        initilize_R()
+        self._warnings = []
+        self.validate(CONFIG)
+        run(CONFIG, self._warnings)
+        save_params = save_county_negbin_parameters_cases(CONFIG['data_directory'])
+        save_params.to_csv(CONFIG['output_csv'], index=False)
+
+
+register_task(ReconstructionEstimateParameters())
 
 
 if __name__ == '__main__':
