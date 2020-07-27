@@ -1,4 +1,4 @@
-__all__ = ['create_us_choropleth']
+__all__ = ['create_us_choropleth_scenario', 'create_us_choropleth_summary']
 
 import sys
 import geopandas as gpd
@@ -174,6 +174,51 @@ color_mapper.low = minval;
         show(final)
 
 
+def get_values_summary(gdf, summary_csv, date, value='qmean_filtered_est_beta'):
+    if date is None:
+        index=-1
+        for fips in summary_csv:
+            datestring = summary_csv[fips][index]['dates']
+            summary_cols = set(summary_csv[fips][index].keys()) - set(['dates'])
+            break
+    else:
+        for fips in summary_csv:
+            for index in range(len(summary_csv[fips][index])):
+                if date == summary_csv[fips][index]['dates']:
+                    datestring = date
+                    summary_cols = set(summary_csv[fips][index].keys()) - set(['dates'])
+            break
+
+
+    vals = {}
+    for col in summary_cols:
+        vals[col] = []
+    all_values = set()
+    status = []
+    for fips in gdf['fips']:
+        if fips in summary_csv:
+            for col in summary_cols:
+                val = summary_csv[fips][index][col]
+                if val == '':
+                    vals[col].append(None)
+                else:
+                    val = float(val)
+                    vals[col].append(val)
+                    if col == value:
+                        all_values.add(val)
+        else:
+            for col in summary_cols:
+                vals[col].append(None)
+
+    ans = {}
+    if len(all_values) == 0:
+        return ans, None
+    for col in summary_cols:
+        ans[col] = vals[col]
+    ans['Date'] = datestring
+    return ans, max(all_values)
+
+
 def create_us_choropleth_summary(*, summary_csv, value_key, date=None, shapefile=os.path.join(currdir, 'data/cb_2019_us_county_5m.shp'), states=None, description="Unknown Bokeh Choropleth", value_name="Value", max_value=None, crange=None, cvalue=None, output_html=None, show_browser=False):
     if not bokeh_available:
         raise RuntimeError("Need to install bokeh package to generate choropleth visualization")
@@ -194,9 +239,11 @@ def create_us_choropleth_summary(*, summary_csv, value_key, date=None, shapefile
     #
     gdf = gdf[['GEOID', 'NAME', 'geometry']]
     gdf.columns = ['fips', 'county_name', 'geometry']
-    val_list, status_list, all_values, datestring = get_values(gdf, results_json, date, value_key)
-    gdf.insert(1, "solver_status", status_list)
-    gdf.insert(1, "plot_value", val_list)
+    all_values, max_value = get_values_summary(gdf, summary_csv, date)
+    datestring = all_values['Date']
+    gdf.insert(1, "mean_beta", all_values['qmean_filtered_est_beta'])
+    gdf.insert(1, "q05_beta", all_values['q05_filtered_est_beta'])
+    gdf.insert(1, "q95_beta", all_values['q95_filtered_est_beta'])
     #
     # Create GeoJSONDataSource
     #
@@ -208,7 +255,7 @@ def create_us_choropleth_summary(*, summary_csv, value_key, date=None, shapefile
     # maximum value on the scale, or it will be inferred here
     #
     if max_value is None:
-        max_value = int(max(all_values))+1
+        max_value = int(max_value)+1
     if crange is None:
         crange = [0, max_value]
     else:
@@ -249,7 +296,7 @@ def create_us_choropleth_summary(*, summary_csv, value_key, date=None, shapefile
                 x_axis_location=None,
                 y_axis_location=None,
                 tools="pan,box_zoom,wheel_zoom,reset,hover,save",
-                tooltips=[ ("Name", "@county_name"), ("FIPS", "@fips"), (value_name, "@plot_value"), ("Solver Status", "@solver_status"), ("(Long, Lat)", "($x, $y)") ]
+                tooltips=[ ("Name", "@county_name"), ("FIPS", "@fips"), ("5% Quantile Beta", "@q05_beta"), ("Mean Beta", "@mean_beta"), ("95% Quantile Beta", "@q95_beta"), ("(Long, Lat)", "($x, $y)") ]
                 )
 
     p.hover.point_policy = "follow_mouse"
@@ -257,7 +304,7 @@ def create_us_choropleth_summary(*, summary_csv, value_key, date=None, shapefile
     p.ygrid.grid_line_color = None
     p.patches('xs','ys', 
                 source=geosource, 
-                fill_color={'field' :'plot_value', 'transform' : color_mapper},
+                fill_color={'field' :'mean_beta', 'transform' : color_mapper},
                 line_color='black',
                 line_width=0.25,
                 fill_alpha=1)
