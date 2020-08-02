@@ -509,6 +509,40 @@ def test_np_stochastic_reconstruction():
     _special_tolerance_check(dfsimI3, recon_df, 'I3', abstol, 0.2)
     dfsimR = pd.DataFrame(index=dates, columns=counties, data=simR)
     _special_tolerance_check(dfsimR, recon_df, 'R', abstol, 0.2)
+
+def test_stochastic_reconstruction_from_daily_transmissions():
+    np.random.seed(1975)
+    population=1000
+    n_days = 30
+    dates = pd.date_range(end=datetime(year=2020, month=4, day=12), periods=n_days).to_pydatetime().tolist()
+    assert dates[0] == datetime(year=2020, month=3, day=14)
+    transmissions = [0]*n_days
+    for t in range(5,11):
+        transmissions[t] = 1
+
+    results = recons.stochastic_reconstruction_from_daily_transmissions(
+        dates=dates,
+        transmissions=transmissions,
+        population=population,
+        n_steps_per_day=4,
+        fixed_incubation=5.2,
+        infectious_lower=2.6,
+        infectious_upper=6)
+
+    expS = [1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 999.0, 998.0, 997.0, 996.0, 995.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0, 994.0]
+    expE = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    expI1 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    expI2 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+    expI3 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 2.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
+    expR = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0, 5.0, 5.0, 6.0, 6.0, 6.0]
+    expT = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    np.testing.assert_equal(np.asarray(results.S), np.asarray(expS))
+    np.testing.assert_equal(np.asarray(results.E), np.asarray(expE))
+    np.testing.assert_equal(np.asarray(results.I1), np.asarray(expI1))
+    np.testing.assert_equal(np.asarray(results.I2), np.asarray(expI2))
+    np.testing.assert_equal(np.asarray(results.I3), np.asarray(expI3))
+    np.testing.assert_equal(np.asarray(results.R), np.asarray(expR))
+    np.testing.assert_equal(np.asarray(results.transmissions), np.asarray(expT))
     
 def assert_if_mean_significantly_different(df1, df2, abstol, reltol):
     mean = df1.mean(axis=1)
@@ -609,3 +643,4 @@ def _long_dataframe_from_recon(recon):
         else:
             df = pd.concat([df, S, E, I1, I2, I3, R])
     return df
+
