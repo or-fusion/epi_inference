@@ -32,7 +32,7 @@ class TestReconstruct():
         # check that the json files load into dataframes that have the correct numbers and shapes
         outputdf, golddf = compare_json('./output/recon_countydata1_all.json', './baseline/recon_countydata1_all.json')
         outputdf, golddf = compare_json('./output/recon_countydata1_12011.json', './baseline/recon_countydata1_12011.json')
-    
+
         # cleanup the files we created
         if not keepfiles:
             os.remove('./output/recon_countydata1_all.json')
@@ -46,12 +46,12 @@ class TestReconstruct():
         args.config_file = './config_files/reconstruct_case.yml'
         args.verbose = True
         driver.run(args)
-    
+
         # check that the json files load into dataframes that have the correct numbers and shapes
         outputdf, golddf = compare_json('./output/recon_stoch_countydata1_all_38479387.json', './baseline/recon_stoch_countydata1_all_38479387.json')
         outputdf, golddf = compare_json('./output/recon_stoch_countydata1_all_39847938.json', './baseline/recon_stoch_countydata1_all_39847938.json')
         outputdf, golddf = compare_json('./output/recon_stoch_countydata1_12011.json', './baseline/recon_stoch_countydata1_12011.json')
-    
+
         # cleanup the files we created
         if not keepfiles:
             os.remove('./output/recon_stoch_countydata1_all_38479387.json')
@@ -61,19 +61,34 @@ class TestReconstruct():
             os.remove('./output/recon_stoch_countydata1_12011.json')
             os.remove('./output/recon_stoch_countydata1_12011_meta.yml')
 
+    def test_reconstruct_from_deconvolution_transmissions(self):
+        args = Options()
+        args.block = 'deconvolution_stochastic'
+        args.config_file = './config_files/reconstruct_case.yml'
+        args.verbose = True
+        driver.run(args)
+
+        # check that the json files load into dataframes that have the correct numbers and shapes
+        outputdf, golddf = compare_json('./output/recon_stoch_deconvolutions_all_38479387.json', './baseline/recon_stoch_deconvolutions_all_38479387.json')
+
+        # cleanup the files we created
+        if not keepfiles:
+            os.remove('./output/recon_stoch_deconvolutions_all_38479387.json')
+            os.remove('./output/recon_stoch_deconvolutions_all_38479387_meta.yml')
+
     def test_recon_json2csv(self):
         args = Options()
         args.block = 'json2csv'
         args.config_file = './config_files/reconstruct_case.yml'
         args.verbose = True
         driver.run(args)
-    
+
         # check that the json files load into dataframes that have the correct numbers and shapes
         outputdf, golddf = compare_csv('./output/recon_stoch_countydata1_all_38479387_flatten.csv', './baseline/recon_stoch_countydata1_all_38479387_flatten.csv')
         outputdf, golddf = compare_csv('./output/recon_stoch_countydata1_all_flatten.csv', './baseline/recon_stoch_countydata1_all_flatten.csv')
         outputdf, golddf = compare_csv('./output/recon_stoch_countydata1_all_38479387_narrow.csv', './baseline/recon_stoch_countydata1_all_38479387_narrow.csv')
         outputdf, golddf = compare_csv('./output/recon_stoch_countydata1_all_narrow.csv', './baseline/recon_stoch_countydata1_all_narrow.csv')
-    
+
         df_flatten = pd.read_csv('./output/recon_stoch_countydata1_all_38479387_flatten.csv')
         df_narrow = pd.read_csv('./output/recon_stoch_countydata1_all_38479387_narrow.csv')
 
@@ -94,10 +109,10 @@ class TestReconstruct():
         args.config_file = './config_files/reconstruct_case.yml'
         args.verbose = True
         driver.run(args)
-    
+
         # check that the json files load into dataframes that have the correct numbers and shapes
         outputdf, golddf = compare_csv('./output/recon_stoch_countydata1_all_summary.csv', './baseline/recon_stoch_countydata1_all_summary.csv')
-    
+
         # cleanup the files we created
         if not keepfiles:
             os.remove('./output/recon_stoch_countydata1_all_summary.csv')
